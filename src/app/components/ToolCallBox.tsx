@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -11,7 +11,13 @@ import {
   StopCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ToolCall, ActionRequest, ReviewConfig } from "@/app/types/types";
+import {
+  ToolCall,
+  ActionRequest,
+  ApprovalDecision,
+  ReviewConfig,
+} from "@/app/types/types";
+import { useI18n } from "@/providers/I18nProvider";
 import { cn } from "@/lib/utils";
 import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
 import { ToolApprovalInterrupt } from "@/app/components/ToolApprovalInterrupt";
@@ -22,8 +28,11 @@ interface ToolCallBoxProps {
   stream?: any;
   graphId?: string;
   actionRequest?: ActionRequest;
+  index?: number;
   reviewConfig?: ReviewConfig;
-  onResume?: (value: any) => void;
+  decision?: ApprovalDecision;
+  onDecide?: (index: number, decision: ApprovalDecision) => void;
+  onUndo?: (index: number) => void;
   isLoading?: boolean;
 }
 
@@ -34,25 +43,37 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
     stream,
     graphId,
     actionRequest,
+    index,
     reviewConfig,
-    onResume,
+    decision,
+    onDecide,
+    onUndo,
     isLoading,
   }) => {
-    const [isExpanded, setIsExpanded] = useState(
-      () => !!uiComponent || !!actionRequest
-    );
+    const { t } = useI18n();
+    // Approval cards and GenUI can both arrive after this box has mounted, so
+    // expand on the false -> true edge rather than only on mount. Depending on
+    // a boolean (not on the objects) keeps this from re-firing and undoing a
+    // collapse the user made themselves.
+    const shouldAutoExpand = !!uiComponent || !!actionRequest;
+    const [isExpanded, setIsExpanded] = useState(() => shouldAutoExpand);
+
+    useEffect(() => {
+      if (shouldAutoExpand) setIsExpanded(true);
+    }, [shouldAutoExpand]);
+
     const [expandedArgs, setExpandedArgs] = useState<Record<string, boolean>>(
       {}
     );
 
     const { name, args, result, status } = useMemo(() => {
       return {
-        name: toolCall.name || "Unknown Tool",
+        name: toolCall.name || t("tools.unknown"),
         args: toolCall.args || {},
         result: toolCall.result,
         status: toolCall.status || "completed",
       };
-    }, [toolCall]);
+    }, [toolCall, t]);
 
     const statusIcon = useMemo(() => {
       switch (status) {
@@ -100,7 +121,11 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
       }));
     }, []);
 
-    const hasContent = result || Object.keys(args).length > 0;
+    // An approval card lives inside the expanded body, so a tool call with no
+    // args and no result must still count as having content or its buttons are
+    // unreachable.
+    const hasContent =
+      !!result || Object.keys(args).length > 0 || !!actionRequest;
 
     return (
       <div
@@ -149,16 +174,23 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                   stream={stream}
                   message={uiComponent}
                   namespace={graphId}
-                  meta={{ status, args, result: result ?? "No Result Yet" }}
+                  meta={{
+                    status,
+                    args,
+                    result: result ?? t("tools.noResult"),
+                  }}
                 />
               </div>
-            ) : actionRequest && onResume ? (
+            ) : actionRequest && onDecide && index !== undefined ? (
               // Show tool approval UI when there's an action request but no GenUI
               <div className="mt-4">
                 <ToolApprovalInterrupt
                   actionRequest={actionRequest}
+                  index={index}
                   reviewConfig={reviewConfig}
-                  onResume={onResume}
+                  decision={decision}
+                  onDecide={onDecide}
+                  onUndo={onUndo}
                   isLoading={isLoading}
                 />
               </div>
@@ -167,7 +199,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                 {Object.keys(args).length > 0 && (
                   <div className="mt-4">
                     <h4 className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Arguments
+                      {t("common.arguments")}
                     </h4>
                     <div className="space-y-2">
                       {Object.entries(args).map(([key, value]) => (
@@ -209,7 +241,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                 {result && (
                   <div className="mt-4">
                     <h4 className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Result
+                      {t("common.result")}
                     </h4>
                     <pre className="m-0 overflow-x-auto whitespace-pre-wrap break-all rounded-sm border border-border bg-muted/40 p-2 font-mono text-xs leading-7 text-foreground">
                       {typeof result === "string"

@@ -4,86 +4,80 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, Check, X, Pencil } from "lucide-react";
-import type { ActionRequest, ReviewConfig } from "@/app/types/types";
+import type {
+  ActionRequest,
+  ApprovalDecision,
+  ReviewConfig,
+} from "@/app/types/types";
+import { useI18n } from "@/providers/I18nProvider";
 import { cn } from "@/lib/utils";
 
 interface ToolApprovalInterruptProps {
   actionRequest: ActionRequest;
+  /** Position in the interrupt's action_requests; orders the submitted batch. */
+  index: number;
   reviewConfig?: ReviewConfig;
-  onResume: (value: any) => void;
+  decision?: ApprovalDecision;
+  onDecide: (index: number, decision: ApprovalDecision) => void;
+  onUndo?: (index: number) => void;
   isLoading?: boolean;
 }
 
 export function ToolApprovalInterrupt({
   actionRequest,
+  index,
   reviewConfig,
-  onResume,
+  decision,
+  onDecide,
+  onUndo,
   isLoading,
 }: ToolApprovalInterruptProps) {
+  const { t } = useI18n();
   const [rejectionMessage, setRejectionMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editedArgs, setEditedArgs] = useState<Record<string, unknown>>({});
   const [showRejectionInput, setShowRejectionInput] = useState(false);
 
-  const allowedDecisions = reviewConfig?.allowedDecisions ?? [
+  // Backend field names — the wire format is snake_case.
+  const allowedDecisions = reviewConfig?.allowed_decisions ?? [
     "approve",
     "reject",
     "edit",
   ];
 
-  const handleApprove = () => {
-    onResume({
-      decisions: [{ type: "approve" }],
-    });
-  };
+  const isDecided = decision !== undefined;
+  const shownArgs =
+    decision?.type === "edit" ? decision.editedAction.args : actionRequest.args;
 
-  const handleReject = () => {
-    if (showRejectionInput) {
-      onResume({
-        decisions: [
-          {
-            type: "reject",
-            message: rejectionMessage.trim(),
-          },
-        ],
-      });
-    } else {
-      setShowRejectionInput(true);
-    }
+  const handleApprove = () => {
+    onDecide(index, { type: "approve" });
   };
 
   const handleRejectConfirm = () => {
-    onResume({
-      decisions: [
-        {
-          type: "reject",
-          message: rejectionMessage.trim(),
-        },
-      ],
-    });
+    onDecide(index, { type: "reject", message: rejectionMessage.trim() });
   };
 
   const handleEdit = () => {
-    if (isEditing) {
-      onResume({
-        decisions: [
-          {
-            type: "edit",
-            edited_action: {
-              name: actionRequest.name,
-              args: editedArgs,
-            },
-          },
-        ],
-      });
-      setIsEditing(false);
-      setEditedArgs({});
-    }
+    onDecide(index, {
+      type: "edit",
+      editedAction: { name: actionRequest.name, args: editedArgs },
+    });
+    setIsEditing(false);
+    setEditedArgs({});
   };
 
   const startEditing = () => {
     setIsEditing(true);
-    setEditedArgs(JSON.parse(JSON.stringify(actionRequest.args)));
+    // Re-editing an existing decision keeps that edit instead of discarding it.
+    setEditedArgs(
+      JSON.parse(
+        JSON.stringify(
+          decision?.type === "edit"
+            ? decision.editedAction.args
+            : actionRequest.args
+        )
+      )
+    );
     setShowRejectionInput(false);
   };
 
@@ -104,6 +98,22 @@ export function ToolApprovalInterrupt({
     }
   };
 
+  const decidedLabel =
+    decision?.type === "approve"
+      ? t("approval.statusApproved")
+      : decision?.type === "reject"
+      ? t("approval.statusRejected")
+      : t("approval.statusEdited");
+
+  const decidedIcon =
+    decision?.type === "approve" ? (
+      <Check size={14} />
+    ) : decision?.type === "reject" ? (
+      <X size={14} />
+    ) : (
+      <Pencil size={14} />
+    );
+
   return (
     <div className="w-full rounded-md border border-border bg-muted/30 p-4">
       {/* Header */}
@@ -113,13 +123,13 @@ export function ToolApprovalInterrupt({
           className="text-yellow-600 dark:text-yellow-400"
         />
         <span className="text-xs font-semibold uppercase tracking-wider">
-          Approval Required
+          {t("approval.required")}
         </span>
       </div>
 
       {/* Description */}
       {actionRequest.description && (
-        <p className="mb-3 text-sm text-muted-foreground">
+        <p className="mb-3 whitespace-pre-wrap text-sm text-muted-foreground">
           {actionRequest.description}
         </p>
       )}
@@ -128,7 +138,7 @@ export function ToolApprovalInterrupt({
       <div className="mb-4 rounded-sm border border-border bg-background p-3">
         <div className="mb-2">
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Tool
+            {t("approval.tool")}
           </span>
           <p className="mt-1 font-mono text-sm font-medium text-foreground">
             {actionRequest.name}
@@ -138,10 +148,10 @@ export function ToolApprovalInterrupt({
         {isEditing ? (
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Edit Arguments
+              {t("approval.editArguments")}
             </span>
             <div className="mt-2 space-y-3">
-              {Object.entries(actionRequest.args).map(([key, value]) => (
+              {Object.entries(shownArgs).map(([key, value]) => (
                 <div key={key}>
                   <label className="mb-1 block text-xs font-medium text-foreground">
                     {key}
@@ -170,25 +180,25 @@ export function ToolApprovalInterrupt({
         ) : (
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Arguments
+              {t("common.arguments")}
             </span>
             <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all rounded-sm border border-border bg-muted/40 p-2 font-mono text-xs text-foreground">
-              {JSON.stringify(actionRequest.args, null, 2)}
+              {JSON.stringify(shownArgs, null, 2)}
             </pre>
           </div>
         )}
       </div>
 
       {/* Rejection Message Input */}
-      {showRejectionInput && !isEditing && (
+      {showRejectionInput && !isEditing && !isDecided && (
         <div className="mb-4">
           <label className="mb-2 block text-xs font-medium text-foreground">
-            Rejection Message (optional)
+            {t("approval.rejectionMessage")}
           </label>
           <Textarea
             value={rejectionMessage}
             onChange={(e) => setRejectionMessage(e.target.value)}
-            placeholder="Explain why you're rejecting this action..."
+            placeholder={t("approval.rejectionPlaceholder")}
             className="text-sm"
             rows={2}
             disabled={isLoading}
@@ -197,8 +207,32 @@ export function ToolApprovalInterrupt({
       )}
 
       {/* Actions */}
-      <div className="flex flex-wrap gap-2">
-        {isEditing ? (
+      <div className="flex flex-wrap items-center gap-2">
+        {isDecided ? (
+          <>
+            <span
+              className={cn(
+                "flex items-center gap-1.5 text-sm font-medium",
+                decision?.type === "reject"
+                  ? "text-destructive"
+                  : "text-green-600 dark:text-green-500"
+              )}
+            >
+              {decidedIcon}
+              {decidedLabel}
+            </span>
+            {onUndo && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onUndo(index)}
+                disabled={isLoading}
+              >
+                {t("approval.undo")}
+              </Button>
+            )}
+          </>
+        ) : isEditing ? (
           <>
             <Button
               variant="outline"
@@ -206,7 +240,7 @@ export function ToolApprovalInterrupt({
               onClick={cancelEditing}
               disabled={isLoading}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               size="sm"
@@ -215,7 +249,7 @@ export function ToolApprovalInterrupt({
               className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
             >
               <Check size={14} />
-              {isLoading ? "Saving..." : "Save & Approve"}
+              {isLoading ? t("approval.saving") : t("approval.saveAndApprove")}
             </Button>
           </>
         ) : showRejectionInput ? (
@@ -229,7 +263,7 @@ export function ToolApprovalInterrupt({
               }}
               disabled={isLoading}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -237,7 +271,9 @@ export function ToolApprovalInterrupt({
               onClick={handleRejectConfirm}
               disabled={isLoading}
             >
-              {isLoading ? "Rejecting..." : "Confirm Reject"}
+              {isLoading
+                ? t("approval.rejecting")
+                : t("approval.confirmReject")}
             </Button>
           </>
         ) : (
@@ -246,12 +282,12 @@ export function ToolApprovalInterrupt({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleReject}
+                onClick={() => setShowRejectionInput(true)}
                 disabled={isLoading}
                 className="text-destructive hover:bg-destructive/10"
               >
                 <X size={14} />
-                Reject
+                {t("approval.reject")}
               </Button>
             )}
             {allowedDecisions.includes("edit") && (
@@ -262,7 +298,7 @@ export function ToolApprovalInterrupt({
                 disabled={isLoading}
               >
                 <Pencil size={14} />
-                Edit
+                {t("common.edit")}
               </Button>
             )}
             {allowedDecisions.includes("approve") && (
@@ -276,7 +312,7 @@ export function ToolApprovalInterrupt({
                 )}
               >
                 <Check size={14} />
-                {isLoading ? "Approving..." : "Approve"}
+                {isLoading ? t("approval.approving") : t("approval.approve")}
               </Button>
             )}
           </>

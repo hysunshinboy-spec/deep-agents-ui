@@ -2,6 +2,8 @@ import useSWRInfinite from "swr/infinite";
 import type { Thread } from "@langchain/langgraph-sdk";
 import { Client } from "@langchain/langgraph-sdk";
 import { getConfig } from "@/lib/config";
+import { isUuid } from "@/lib/assistants";
+import { getLanguage, translate, type Language } from "@/lib/i18n";
 
 export interface ThreadItem {
   id: string;
@@ -45,6 +47,9 @@ export function useThreads(props: {
         assistantId: config.assistantId,
         apiKey,
         status: props?.status,
+        // Part of the key so that titles derived below (fallbacks for untitled
+        // threads) are rebuilt when the language changes.
+        language: getLanguage(),
       };
     },
     async ({
@@ -54,6 +59,7 @@ export function useThreads(props: {
       status,
       pageIndex,
       pageSize,
+      language,
     }: {
       kind: "threads";
       pageIndex: number;
@@ -62,17 +68,12 @@ export function useThreads(props: {
       assistantId: string;
       apiKey: string;
       status?: Thread["status"];
+      language: Language;
     }) => {
       const client = new Client({
         apiUrl: deploymentUrl,
         defaultHeaders: apiKey ? { "X-Api-Key": apiKey } : {},
       });
-
-      // Check if assistantId is a UUID (deployed) or graph name (local)
-      const isUUID =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-          assistantId
-        );
 
       const threads = await client.threads.search({
         limit: pageSize,
@@ -82,11 +83,13 @@ export function useThreads(props: {
         status,
         // Only filter by assistant_id metadata for deployed graphs (UUIDs)
         // Local dev graphs don't set this metadata
-        ...(isUUID ? { metadata: { assistant_id: assistantId } } : {}),
+        ...(isUuid(assistantId)
+          ? { metadata: { assistant_id: assistantId } }
+          : {}),
       });
 
       return threads.map((thread): ThreadItem => {
-        let title = "Untitled Thread";
+        let title = translate(language, "threads.untitled");
         let description = "";
 
         try {
@@ -115,7 +118,9 @@ export function useThreads(props: {
           }
         } catch {
           // Fallback to thread ID
-          title = `Thread ${thread.thread_id.slice(0, 8)}`;
+          title = translate(language, "threads.fallbackTitle", {
+            id: thread.thread_id.slice(0, 8),
+          });
         }
 
         return {

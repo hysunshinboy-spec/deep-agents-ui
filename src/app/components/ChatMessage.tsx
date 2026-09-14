@@ -7,7 +7,8 @@ import { MarkdownContent } from "@/app/components/MarkdownContent";
 import type {
   SubAgent,
   ToolCall,
-  ActionRequest,
+  ApprovalDecision,
+  ApprovalSlot,
   ReviewConfig,
 } from "@/app/types/types";
 import { Message } from "@langchain/langgraph-sdk";
@@ -15,17 +16,20 @@ import {
   extractSubAgentContent,
   extractStringFromMessageContent,
 } from "@/app/utils/utils";
+import { useI18n } from "@/providers/I18nProvider";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
   message: Message;
   toolCalls: ToolCall[];
   isLoading?: boolean;
-  actionRequestsMap?: Map<string, ActionRequest>;
-  reviewConfigsMap?: Map<string, ReviewConfig>;
+  approvalSlotsByToolCallId?: Map<string, ApprovalSlot>;
+  reviewConfigsByToolName?: Map<string, ReviewConfig>;
+  decisions?: Map<number, ApprovalDecision>;
+  onDecide?: (index: number, decision: ApprovalDecision) => void;
+  onUndo?: (index: number) => void;
   ui?: any[];
   stream?: any;
-  onResumeInterrupt?: (value: any) => void;
   graphId?: string;
 }
 
@@ -34,13 +38,16 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     message,
     toolCalls,
     isLoading,
-    actionRequestsMap,
-    reviewConfigsMap,
+    approvalSlotsByToolCallId,
+    reviewConfigsByToolName,
+    decisions,
+    onDecide,
+    onUndo,
     ui,
     stream,
-    onResumeInterrupt,
     graphId,
   }) => {
+    const { t } = useI18n();
     const isUser = message.type === "human";
     const messageContent = extractStringFromMessageContent(message);
     const hasContent = messageContent && messageContent.trim() !== "";
@@ -129,8 +136,10 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                 const toolCallGenUiComponent = ui?.find(
                   (u) => u.metadata?.tool_call_id === toolCall.id
                 );
-                const actionRequest = actionRequestsMap?.get(toolCall.name);
-                const reviewConfig = reviewConfigsMap?.get(toolCall.name);
+                const slot = approvalSlotsByToolCallId?.get(toolCall.id);
+                const reviewConfig = slot
+                  ? reviewConfigsByToolName?.get(slot.actionRequest.name)
+                  : undefined;
                 return (
                   <ToolCallBox
                     key={toolCall.id}
@@ -138,9 +147,12 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                     uiComponent={toolCallGenUiComponent}
                     stream={stream}
                     graphId={graphId}
-                    actionRequest={actionRequest}
+                    actionRequest={slot?.actionRequest}
+                    index={slot?.index}
                     reviewConfig={reviewConfig}
-                    onResume={onResumeInterrupt}
+                    decision={slot ? decisions?.get(slot.index) : undefined}
+                    onDecide={onDecide}
+                    onUndo={onUndo}
                     isLoading={isLoading}
                   />
                 );
@@ -167,7 +179,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                     <div className="w-full max-w-full">
                       <div className="bg-surface border-border-light rounded-md border p-4">
                         <h4 className="text-primary/70 mb-2 text-xs font-semibold uppercase tracking-wider">
-                          Input
+                          {t("common.input")}
                         </h4>
                         <div className="mb-4">
                           <MarkdownContent
@@ -177,7 +189,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                         {subAgent.output && (
                           <>
                             <h4 className="text-primary/70 mb-2 text-xs font-semibold uppercase tracking-wider">
-                              Output
+                              {t("common.output")}
                             </h4>
                             <MarkdownContent
                               content={extractSubAgentContent(subAgent.output)}

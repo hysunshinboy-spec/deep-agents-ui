@@ -11,6 +11,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { toast } from "sonner";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
+import { useI18n } from "@/providers/I18nProvider";
 import type { FileItem } from "@/app/types/types";
 import useSWRMutation from "swr/mutation";
 
@@ -56,6 +57,7 @@ export const FileViewDialog = React.memo<{
   onClose: () => void;
   editDisabled: boolean;
 }>(({ file, onSaveFile, onClose, editDisabled }) => {
+  const { t } = useI18n();
   const [isEditingMode, setIsEditingMode] = useState(file === null);
   const [fileName, setFileName] = useState(String(file?.path || ""));
   const [fileContent, setFileContent] = useState(String(file?.content || ""));
@@ -68,7 +70,8 @@ export const FileViewDialog = React.memo<{
     },
     {
       onSuccess: () => setIsEditingMode(false),
-      onError: (error) => toast.error(`Failed to save file: ${error}`),
+      onError: (error) =>
+        toast.error(t("files.saveFailed", { error: String(error) })),
     }
   );
 
@@ -140,7 +143,7 @@ export const FileViewDialog = React.memo<{
     >
       <DialogContent className="flex h-[80vh] max-h-[80vh] min-w-[60vw] flex-col p-6">
         <DialogTitle className="sr-only">
-          {file?.path || "New File"}
+          {file?.path || t("files.newFile")}
         </DialogTitle>
         <div className="mb-4 flex items-center justify-between border-b border-border pb-4">
           <div className="flex min-w-0 items-center gap-2">
@@ -149,7 +152,7 @@ export const FileViewDialog = React.memo<{
               <Input
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
-                placeholder="Enter filename..."
+                placeholder={t("files.filenamePlaceholder")}
                 className="text-base font-medium"
                 aria-invalid={!fileNameIsValid}
               />
@@ -173,7 +176,7 @@ export const FileViewDialog = React.memo<{
                     size={16}
                     className="mr-1"
                   />
-                  Edit
+                  {t("common.edit")}
                 </Button>
                 <Button
                   onClick={handleCopy}
@@ -185,7 +188,7 @@ export const FileViewDialog = React.memo<{
                     size={16}
                     className="mr-1"
                   />
-                  Copy
+                  {t("common.copy")}
                 </Button>
                 <Button
                   onClick={handleDownload}
@@ -197,7 +200,7 @@ export const FileViewDialog = React.memo<{
                     size={16}
                     className="mr-1"
                   />
-                  Download
+                  {t("common.download")}
                 </Button>
               </>
             )}
@@ -208,7 +211,7 @@ export const FileViewDialog = React.memo<{
             <Textarea
               value={fileContent}
               onChange={(e) => setFileContent(e.target.value)}
-              placeholder="Enter file content..."
+              placeholder={t("files.contentPlaceholder")}
               className="h-full min-h-[400px] resize-none font-mono text-sm"
             />
           ) : (
@@ -242,7 +245,7 @@ export const FileViewDialog = React.memo<{
                 ) : (
                   <div className="flex items-center justify-center p-12">
                     <p className="text-sm text-muted-foreground">
-                      File is empty
+                      {t("files.viewerEmpty")}
                     </p>
                   </div>
                 )}
@@ -261,7 +264,7 @@ export const FileViewDialog = React.memo<{
                 size={16}
                 className="mr-1"
               />
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={() => fileUpdate.trigger()}
@@ -284,7 +287,7 @@ export const FileViewDialog = React.memo<{
                   className="mr-1"
                 />
               )}
-              Save
+              {t("common.save")}
             </Button>
           </div>
         )}

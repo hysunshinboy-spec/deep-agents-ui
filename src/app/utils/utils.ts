@@ -1,6 +1,7 @@
 import { Message } from "@langchain/langgraph-sdk";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { ActionRequest, ApprovalSlot, ToolCall } from "@/app/types/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -154,4 +155,84 @@ export function formatMessageForLLM(message: Message): string {
 export function formatConversationForLLM(messages: Message[]): string {
   const formattedMessages = messages.map(formatMessageForLLM);
   return formattedMessages.join("\n\n---\n\n");
+}
+
+/**
+ * Structural equality that ignores key order.
+ *
+ * `JSON.stringify` is not usable here: args that round-trip through the backend
+ * can come back with a different key order, which compares unequal as strings
+ * while being the same object.
+ */
+export function deepEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  ) {
+    return false;
+  }
+  if (Array.isArray(a) || Array.isArray(b)) {
+    return (
+      Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((item, index) => deepEqual(item, b[index]))
+    );
+  }
+  const left = a as Record<string, unknown>;
+  const right = b as Record<string, unknown>;
+  const keys = Object.keys(left);
+  return (
+    keys.length === Object.keys(right).length &&
+    keys.every(
+      (key) =>
+        Object.prototype.hasOwnProperty.call(right, key) &&
+        deepEqual(left[key], right[key])
+    )
+  );
+}
+
+/**
+ * Pair each action request from the interrupt with the tool call it belongs to.
+ *
+ * The backend does not put a tool call id on an action request, so the pairing
+ * is inferred. Candidates are narrowed to unconsumed calls of the same name —
+ * that alone skips non-interruptible calls (e.g. `task`) sharing the message.
+ * An args match is preferred but never required, because `toolCall.args` is
+ * sometimes still a JSON string, in which case the backend's call order is the
+ * only signal left.
+ *
+ * Consumption spans both branches, so two calls with identical args still bind
+ * one action request each.
+ */
+export function matchActionRequests(
+  toolCalls: ToolCall[],
+  actionRequests: ActionRequest[]
+): { byToolCallId: Map<string, ApprovalSlot>; unmatched: ApprovalSlot[] } {
+  const byToolCallId = new Map<string, ApprovalSlot>();
+  const unmatched: ApprovalSlot[] = [];
+  const consumed = new Set<string>();
+
+  actionRequests.forEach((actionRequest, index) => {
+    const candidates = toolCalls.filter(
+      (toolCall) =>
+        toolCall.name === actionRequest.name && !consumed.has(toolCall.id)
+    );
+    const match =
+      candidates.find((toolCall) =>
+        deepEqual(toolCall.args, actionRequest.args)
+      ) ?? candidates[0];
+
+    if (!match) {
+      unmatched.push({ index, actionRequest });
+      return;
+    }
+    consumed.add(match.id);
+    byToolCallId.set(match.id, { index, actionRequest });
+  });
+
+  return { byToolCallId, unmatched };
 }

@@ -12,21 +12,20 @@ import { Button } from "@/components/ui/button";
 import {
   Square,
   ArrowUp,
+  AlertCircle,
   CheckCircle,
   Clock,
   Circle,
   FileIcon,
 } from "lucide-react";
 import { ChatMessage } from "@/app/components/ChatMessage";
-import type {
-  TodoItem,
-  ToolCall,
-  ActionRequest,
-  ReviewConfig,
-} from "@/app/types/types";
+import { ToolApprovalInterrupt } from "@/app/components/ToolApprovalInterrupt";
+import type { TodoItem, ToolCall } from "@/app/types/types";
 import { Assistant, Message } from "@langchain/langgraph-sdk";
 import { extractStringFromMessageContent } from "@/app/utils/utils";
+import { useToolApproval } from "@/app/hooks/useToolApproval";
 import { useChatContext } from "@/providers/ChatProvider";
+import { useI18n } from "@/providers/I18nProvider";
 import { cn } from "@/lib/utils";
 import { useStickToBottom } from "use-stick-to-bottom";
 import { FilesPopover } from "@/app/components/TasksFilesSidebar";
@@ -34,6 +33,12 @@ import { FilesPopover } from "@/app/components/TasksFilesSidebar";
 interface ChatInterfaceProps {
   assistant: Assistant | null;
 }
+
+const TODO_STATUS_KEYS: Record<TodoItem["status"], string> = {
+  pending: "tasks.statusPending",
+  in_progress: "tasks.statusInProgress",
+  completed: "tasks.statusCompleted",
+};
 
 const getStatusIcon = (status: TodoItem["status"], className?: string) => {
   switch (status) {
@@ -62,6 +67,7 @@ const getStatusIcon = (status: TodoItem["status"], className?: string) => {
 };
 
 export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
+  const { t } = useI18n();
   const [metaOpen, setMetaOpen] = useState<"tasks" | "files" | null>(null);
   const tasksContainerRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -224,22 +230,15 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   const hasTasks = todos.length > 0;
   const hasFiles = Object.keys(files).length > 0;
 
-  // Parse out any action requests or review configs from the interrupt
-  const actionRequestsMap: Map<string, ActionRequest> | null = useMemo(() => {
-    const actionRequests =
-      interrupt?.value && (interrupt.value as any)["action_requests"];
-    if (!actionRequests) return new Map<string, ActionRequest>();
-    return new Map(actionRequests.map((ar: ActionRequest) => [ar.name, ar]));
-  }, [interrupt]);
+  const approval = useToolApproval({
+    interrupt,
+    messages: processedMessages,
+    isLoading,
+    resumeInterrupt,
+  });
 
-  const reviewConfigsMap: Map<string, ReviewConfig> | null = useMemo(() => {
-    const reviewConfigs =
-      interrupt?.value && (interrupt.value as any)["review_configs"];
-    if (!reviewConfigs) return new Map<string, ReviewConfig>();
-    return new Map(
-      reviewConfigs.map((rc: ReviewConfig) => [rc.actionName, rc])
-    );
-  }, [interrupt]);
+  const decisionCount = approval.decisions.size;
+  const actionRequestCount = approval.actionRequests.length;
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -253,34 +252,60 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         >
           {isThreadLoading ? (
             <div className="flex items-center justify-center p-8">
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="text-muted-foreground">{t("common.loading")}</p>
             </div>
           ) : (
             <>
-              {processedMessages.map((data, index) => {
+              {processedMessages.map((data) => {
                 const messageUi = ui?.filter(
                   (u: any) => u.metadata?.message_id === data.message.id
                 );
-                const isLastMessage = index === processedMessages.length - 1;
+                const isHostMessage =
+                  data.message.id === approval.hostMessageId;
                 return (
                   <ChatMessage
                     key={data.message.id}
                     message={data.message}
                     toolCalls={data.toolCalls}
                     isLoading={isLoading}
-                    actionRequestsMap={
-                      isLastMessage ? actionRequestsMap : undefined
+                    approvalSlotsByToolCallId={
+                      isHostMessage ? approval.byToolCallId : undefined
                     }
-                    reviewConfigsMap={
-                      isLastMessage ? reviewConfigsMap : undefined
+                    reviewConfigsByToolName={
+                      isHostMessage
+                        ? approval.reviewConfigsByToolName
+                        : undefined
                     }
+                    decisions={approval.decisions}
+                    onDecide={approval.decide}
+                    onUndo={approval.undo}
                     ui={messageUi}
                     stream={stream}
-                    onResumeInterrupt={resumeInterrupt}
                     graphId={assistant?.graph_id}
                   />
                 );
               })}
+
+              {/* An action request whose tool call could not be matched still
+                  needs a card, otherwise the batch can never be completed. */}
+              {approval.unmatched.map((slot) => (
+                <div
+                  key={`unmatched-${slot.index}`}
+                  className="mt-4"
+                >
+                  <ToolApprovalInterrupt
+                    actionRequest={slot.actionRequest}
+                    index={slot.index}
+                    reviewConfig={approval.reviewConfigsByToolName.get(
+                      slot.actionRequest.name
+                    )}
+                    decision={approval.decisions.get(slot.index)}
+                    onDecide={approval.decide}
+                    onUndo={approval.undo}
+                    isLoading={isLoading}
+                  />
+                </div>
+              ))}
             </>
           )}
         </div>
@@ -293,6 +318,18 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
             "mx-auto w-[calc(100%-32px)] max-w-[1024px] transition-colors duration-200 ease-in-out"
           )}
         >
+          {actionRequestCount > 1 && (
+            <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-[18px] py-2 text-xs text-muted-foreground">
+              <AlertCircle size={14} />
+              <span>
+                {t("approval.batchProgress", {
+                  done: decisionCount,
+                  total: actionRequestCount,
+                })}
+              </span>
+            </div>
+          )}
+
           {(hasTasks || hasFiles) && (
             <div className="flex max-h-72 flex-col overflow-y-auto border-b border-border bg-sidebar empty:hidden">
               {!metaOpen && (
@@ -332,7 +369,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                                   key="label"
                                   className="ml-[1px] min-w-0 truncate text-sm"
                                 >
-                                  All tasks completed
+                                  {t("chat.allTasksCompleted")}
                                 </span>,
                               ];
                             }
@@ -346,9 +383,11 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                                   key="label"
                                   className="ml-[1px] min-w-0 truncate text-sm"
                                 >
-                                  Task{" "}
-                                  {totalTasks - groupedTodos.pending.length} of{" "}
-                                  {totalTasks}
+                                  {t("chat.taskOf", {
+                                    current:
+                                      totalTasks - groupedTodos.pending.length,
+                                    total: totalTasks,
+                                  })}
                                 </span>,
                                 <span
                                   key="content"
@@ -369,8 +408,11 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                                 key="label"
                                 className="ml-[1px] min-w-0 truncate text-sm"
                               >
-                                Task {totalTasks - groupedTodos.pending.length}{" "}
-                                of {totalTasks}
+                                {t("chat.taskOf", {
+                                  current:
+                                    totalTasks - groupedTodos.pending.length,
+                                  total: totalTasks,
+                                })}
                               </span>,
                             ];
                           })()}
@@ -392,7 +434,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                           aria-expanded={metaOpen === "files"}
                         >
                           <FileIcon size={16} />
-                          Files (State)
+                          {t("chat.filesState")}
                           <span className="h-4 min-w-4 rounded-full bg-[#2F6868] px-0.5 text-center text-[10px] leading-[16px] text-white">
                             {Object.keys(files).length}
                           </span>
@@ -424,7 +466,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                         }
                         aria-expanded={metaOpen === "tasks"}
                       >
-                        Tasks
+                        {t("chat.tasks")}
                       </button>
                     )}
                     {hasFiles && (
@@ -438,14 +480,14 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                         }
                         aria-expanded={metaOpen === "files"}
                       >
-                        Files (State)
+                        {t("chat.filesState")}
                         <span className="h-4 min-w-4 rounded-full bg-[#2F6868] px-0.5 text-center text-[10px] leading-[16px] text-white">
                           {Object.keys(files).length}
                         </span>
                       </button>
                     )}
                     <button
-                      aria-label="Close"
+                      aria-label={t("common.close")}
                       className="flex-1"
                       onClick={() => setMetaOpen(null)}
                     />
@@ -463,13 +505,9 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                             className="mb-4"
                           >
                             <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
-                              {
-                                {
-                                  pending: "Pending",
-                                  in_progress: "In Progress",
-                                  completed: "Completed",
-                                }[status]
-                              }
+                              {t(
+                                TODO_STATUS_KEYS[status as TodoItem["status"]]
+                              )}
                             </h3>
                             <div className="grid grid-cols-[auto_1fr] gap-3 rounded-sm p-1 pl-0 text-sm">
                               {todos.map((todo, index) => (
@@ -509,7 +547,9 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={isLoading ? "Running..." : "Write your message..."}
+              placeholder={
+                isLoading ? t("chat.placeholderRunning") : t("chat.placeholder")
+              }
               className="font-inherit field-sizing-content flex-1 resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-7 text-primary outline-none placeholder:text-tertiary"
               rows={1}
             />
@@ -524,12 +564,12 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                   {isLoading ? (
                     <>
                       <Square size={14} />
-                      <span>Stop</span>
+                      <span>{t("chat.stop")}</span>
                     </>
                   ) : (
                     <>
                       <ArrowUp size={18} />
-                      <span>Send</span>
+                      <span>{t("chat.send")}</span>
                     </>
                   )}
                 </Button>

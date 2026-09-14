@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { StandaloneConfig } from "@/lib/config";
+import { useI18n } from "@/providers/I18nProvider";
+import { toast } from "sonner";
 
 interface ConfigDialogProps {
   open: boolean;
@@ -21,12 +23,25 @@ interface ConfigDialogProps {
   initialConfig?: StandaloneConfig;
 }
 
+/**
+ * Renders a translated string that marks code spans with backticks, so the
+ * hint keeps its monospace file names in every language.
+ */
+function renderHint(text: string) {
+  return text
+    .split("`")
+    .map((part, index) =>
+      index % 2 === 1 ? <code key={index}>{part}</code> : part
+    );
+}
+
 export function ConfigDialog({
   open,
   onOpenChange,
   onSave,
   initialConfig,
 }: ConfigDialogProps) {
+  const { t } = useI18n();
   const [deploymentUrl, setDeploymentUrl] = useState(
     initialConfig?.deploymentUrl || ""
   );
@@ -47,7 +62,7 @@ export function ConfigDialog({
 
   const handleSave = () => {
     if (!deploymentUrl || !assistantId) {
-      alert("Please fill in all required fields");
+      toast.error(t("config.required"));
       return;
     }
 
@@ -66,35 +81,37 @@ export function ConfigDialog({
     >
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Configuration</DialogTitle>
-          <DialogDescription>
-            Configure your LangGraph deployment settings. These settings are
-            saved in your browser&apos;s local storage.
-          </DialogDescription>
+          <DialogTitle>{t("config.title")}</DialogTitle>
+          <DialogDescription>{t("config.description")}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="deploymentUrl">Deployment URL</Label>
+            <Label htmlFor="deploymentUrl">{t("config.deploymentUrl")}</Label>
             <Input
               id="deploymentUrl"
-              placeholder="https://<deployment-url>"
+              placeholder="http://127.0.0.1:2024"
               value={deploymentUrl}
               onChange={(e) => setDeploymentUrl(e.target.value)}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="assistantId">Assistant ID</Label>
+            <Label htmlFor="assistantId">{t("config.assistantId")}</Label>
             <Input
               id="assistantId"
-              placeholder="<assistant-id>"
+              placeholder="research_agent"
               value={assistantId}
               onChange={(e) => setAssistantId(e.target.value)}
             />
+            <p className="text-xs text-muted-foreground">
+              {renderHint(t("config.assistantIdHint"))}
+            </p>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="langsmithApiKey">
-              LangSmith API Key{" "}
-              <span className="text-muted-foreground">(Optional)</span>
+              {t("config.apiKey")}{" "}
+              <span className="text-muted-foreground">
+                {t("config.optional")}
+              </span>
             </Label>
             <Input
               id="langsmithApiKey"
@@ -110,9 +127,9 @@ export function ConfigDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>{t("common.save")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

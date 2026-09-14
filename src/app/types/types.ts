@@ -46,9 +46,28 @@ export interface ActionRequest {
   description?: string;
 }
 
+/** Field names match the wire format of the backend's HITLRequest. */
 export interface ReviewConfig {
-  actionName: string;
-  allowedDecisions?: string[];
+  action_name: string;
+  allowed_decisions?: string[];
+}
+
+export type ApprovalDecision =
+  | { type: "approve" }
+  | { type: "reject"; message?: string }
+  | {
+      type: "edit";
+      editedAction: { name: string; args: Record<string, unknown> };
+    };
+
+/**
+ * An action request paired with its position in `interrupt.value.action_requests`.
+ * The backend requires one decision per request, in that order, submitted
+ * together — so the index, not the tool call id, is what orders the payload.
+ */
+export interface ApprovalSlot {
+  index: number;
+  actionRequest: ActionRequest;
 }
 
 export interface ToolApprovalInterruptData {

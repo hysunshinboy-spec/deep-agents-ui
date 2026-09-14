@@ -17,6 +17,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { TodoItem, FileItem } from "@/app/types/types";
 import { useChatContext } from "@/providers/ChatProvider";
+import { useI18n } from "@/providers/I18nProvider";
 import { cn } from "@/lib/utils";
 import { FileViewDialog } from "@/app/components/FileViewDialog";
 
@@ -29,6 +30,7 @@ export function FilesPopover({
   setFiles: (files: Record<string, string>) => Promise<void>;
   editDisabled: boolean;
 }) {
+  const { t } = useI18n();
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
 
   const handleSaveFile = useCallback(
@@ -43,7 +45,7 @@ export function FilesPopover({
     <>
       {Object.keys(files).length === 0 ? (
         <div className="flex h-full items-center justify-center p-4 text-center">
-          <p className="text-xs text-muted-foreground">No files created yet</p>
+          <p className="text-xs text-muted-foreground">{t("files.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(256px,1fr))] gap-2">
@@ -116,6 +118,7 @@ export const TasksFilesSidebar = React.memo<{
   files: Record<string, string>;
   setFiles: (files: Record<string, string>) => Promise<void>;
 }>(({ todos, files, setFiles }) => {
+  const { t } = useI18n();
   const { isLoading, interrupt } = useChatContext();
   const [tasksOpen, setTasksOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -175,11 +178,11 @@ export const TasksFilesSidebar = React.memo<{
     };
   }, [todos]);
 
-  const groupedLabels = {
-    pending: "Pending",
-    in_progress: "In Progress",
-    completed: "Completed",
-  };
+  const groupedLabelKeys = {
+    pending: "tasks.statusPending",
+    in_progress: "tasks.statusInProgress",
+    completed: "tasks.statusCompleted",
+  } as const;
 
   return (
     <div className="min-h-0 w-full flex-1">
@@ -187,7 +190,7 @@ export const TasksFilesSidebar = React.memo<{
         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
           <div className="flex items-center justify-between px-3 pb-1.5 pt-2">
             <span className="text-xs font-semibold tracking-wide text-zinc-600">
-              AGENT TASKS
+              {t("tasks.heading")}
             </span>
             <button
               onClick={() => setTasksOpen((v) => !v)}
@@ -195,7 +198,7 @@ export const TasksFilesSidebar = React.memo<{
                 "flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-transform duration-200 hover:bg-muted",
                 tasksOpen ? "rotate-180" : "rotate-0"
               )}
-              aria-label="Toggle tasks panel"
+              aria-label={t("common.toggleTasksPanel")}
             >
               <ChevronDown size={14} />
             </button>
@@ -206,7 +209,7 @@ export const TasksFilesSidebar = React.memo<{
                 {todos.length === 0 ? (
                   <div className="flex h-full items-center justify-center p-4 text-center">
                     <p className="text-xs text-muted-foreground">
-                      No tasks created yet
+                      {t("tasks.empty")}
                     </p>
                   </div>
                 ) : (
@@ -214,7 +217,11 @@ export const TasksFilesSidebar = React.memo<{
                     {Object.entries(groupedTodos).map(([status, todos]) => (
                       <div className="mb-4">
                         <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
-                          {groupedLabels[status as keyof typeof groupedLabels]}
+                          {t(
+                            groupedLabelKeys[
+                              status as keyof typeof groupedLabelKeys
+                            ]
+                          )}
                         </h3>
                         {todos.map((todo, index) => (
                           <div
@@ -237,7 +244,7 @@ export const TasksFilesSidebar = React.memo<{
 
           <div className="flex items-center justify-between px-3 pb-1.5 pt-2">
             <span className="text-xs font-semibold tracking-wide text-zinc-600">
-              FILE SYSTEM
+              {t("files.heading")}
             </span>
             <button
               onClick={() => setFilesOpen((v) => !v)}
@@ -245,7 +252,7 @@ export const TasksFilesSidebar = React.memo<{
                 "flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-transform duration-200 hover:bg-muted",
                 filesOpen ? "rotate-180" : "rotate-0"
               )}
-              aria-label="Toggle files panel"
+              aria-label={t("common.toggleFilesPanel")}
             >
               <ChevronDown size={14} />
             </button>
