@@ -47,13 +47,13 @@ You will see the local LangGraph deployment log to terminal:
 
 You can get the Deployment URL and Assistant ID from the terminal output and `langgraph.json` file, respectively:
 
-- Deployment URL: <http://127.0.1:2024>
+- Deployment URL: <http://127.0.0.1:2024>
 - Assistant ID: `research`
 
 **Open Deep Agents UI** at [http://localhost:3000](http://localhost:3000) and input the Deployment URL and Assistant ID:
 
 - **Deployment URL**: The URL for the LangGraph deployment you are connecting to
-- **Assistant ID**: The ID of the assistant or agent you want to use
+- **Assistant ID**: Either an assistant UUID, or a graph name — a key of the `graphs` object in your `langgraph.json` file
 - [Optional] **LangSmith API Key**: Your LangSmith API key (format: `lsv2_pt_...`). This may be required for accessing deployed LangGraph applications. You can also provide this via the `NEXT_PUBLIC_LANGSMITH_API_KEY` environment variable.
 
 **Usage**
@@ -72,13 +72,49 @@ You can click on any file to view it.
 
 ### Optional: Environment Variables
 
-You can optionally set environment variables instead of using the settings dialog:
+You can optionally set environment variables instead of using the settings dialog. Copy the
+example file and edit it:
+
+```bash
+cp .env.example .env.local
+```
 
 ```env
+NEXT_PUBLIC_DEPLOYMENT_URL="http://127.0.0.1:2024"
+NEXT_PUBLIC_ASSISTANT_ID="research_agent"
 NEXT_PUBLIC_LANGSMITH_API_KEY="lsv2_xxxx"
 ```
 
-**Note:** Settings configured in the UI take precedence over environment variables.
+| Variable                        | Description                                                        |
+| ------------------------------- | ------------------------------------------------------------------ |
+| `NEXT_PUBLIC_DEPLOYMENT_URL`    | The URL for the LangGraph deployment you are connecting to.        |
+| `NEXT_PUBLIC_ASSISTANT_ID`      | An assistant UUID, or a graph name from `langgraph.json`.          |
+| `NEXT_PUBLIC_LANGSMITH_API_KEY` | Optional. Required for LangSmith / LangGraph Platform deployments. |
+
+**Note:** Settings configured in the UI take precedence over environment variables. Only
+`NEXT_PUBLIC_ASSISTANT_ID` and `NEXT_PUBLIC_DEPLOYMENT_URL` are used to pre-fill the settings
+dialog: once you save settings, the saved values are used instead and the environment variables
+are ignored for that browser. Clearing the site's local storage brings the environment defaults
+back.
+
+**Note:** `NEXT_PUBLIC_*` variables are inlined into the browser bundle when the dev server or a
+build starts, so you need to restart `yarn dev` after changing them.
+
+### Troubleshooting
+
+**`HTTP 404: {"detail":"Graph 'x' not found. Expected one of: ['y']"}`**
+
+The configured Assistant ID does not exist on the deployment. Deep Agents UI recovers from this
+automatically: it looks up the assistants the deployment does expose, switches to the default one
+for the first available graph, saves that choice, and tells you which graph it switched to. Open
+Settings to pick a different one, or set `NEXT_PUBLIC_ASSISTANT_ID` and clear the site's local
+storage to go back to the environment default.
+
+**`Cannot reach the deployment`**
+
+The deployment URL is wrong, or the LangGraph server is not running. Start it with
+`langgraph dev` and check the URL shown in its output. Note that this message can take a few
+seconds to appear, because the client retries a failed connection before giving up.
 
 ### Usage
 
