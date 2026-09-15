@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { StandaloneConfig } from "@/lib/config";
+import { LanguageToggle } from "@/app/components/LanguageToggle";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
 import { useI18n } from "@/providers/I18nProvider";
 import { toast } from "sonner";
 
@@ -120,6 +122,21 @@ export function ConfigDialog({
               value={langsmithApiKey}
               onChange={(e) => setLangsmithApiKey(e.target.value)}
             />
+          </div>
+        </div>
+        {/* 语言与主题即时生效，不参与下面的保存按钮。
+            两个控件的根节点都是 <button>，而 globals.css 里的 `button { border: none }`
+            把 border-style 也一并置成了 none（Tailwind 的 `border` 只给宽度不给样式），
+            按钮上因此画不出边框；border-solid 把样式补回来，border-input 让边框色
+            和上面的输入框一致（否则 `border: none` 会把它重置成 currentColor）。 */}
+        <div className="grid grid-cols-2 gap-4 border-t border-border pt-4">
+          <div className="grid gap-2">
+            <Label>{t("config.language")}</Label>
+            <LanguageToggle className="h-9 w-full justify-start border-solid border-input font-normal" />
+          </div>
+          <div className="grid gap-2">
+            <Label>{t("config.theme")}</Label>
+            <ThemeToggle className="h-9 w-full border-solid" />
           </div>
         </div>
         <DialogFooter>

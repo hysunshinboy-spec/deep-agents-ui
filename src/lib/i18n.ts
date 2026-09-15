@@ -32,6 +32,14 @@ const zh: Record<string, string> = {
   // Language switcher
   "language.switch": "切换语言",
 
+  // Theme switcher
+  "theme.switch": "切换主题",
+  "theme.teal": "青绿",
+  "theme.blue": "商务蓝",
+  "theme.mint": "薄荷绿",
+  "theme.violet": "紫罗兰",
+  "theme.sand": "暖橙米色",
+
   // App shell
   "app.threads": "会话",
   "app.assistantLabel": "助手：",
@@ -66,6 +74,8 @@ const zh: Record<string, string> = {
   "config.apiKey": "LangSmith API 密钥",
   "config.optional": "（可选）",
   "config.required": "部署地址和助手 ID 为必填项",
+  "config.language": "语言",
+  "config.theme": "主题",
 
   // Thread list
   "threads.title": "会话",
@@ -164,6 +174,14 @@ const en: Record<string, string> = {
   // Language switcher
   "language.switch": "Switch language",
 
+  // Theme switcher
+  "theme.switch": "Switch theme",
+  "theme.teal": "Teal",
+  "theme.blue": "Business Blue",
+  "theme.mint": "Mint",
+  "theme.violet": "Violet",
+  "theme.sand": "Warm Sand",
+
   // App shell
   "app.threads": "Threads",
   "app.assistantLabel": "Assistant:",
@@ -198,6 +216,8 @@ const en: Record<string, string> = {
   "config.apiKey": "LangSmith API Key",
   "config.optional": "(Optional)",
   "config.required": "Deployment URL and Assistant ID are required",
+  "config.language": "Language",
+  "config.theme": "Theme",
 
   // Thread list
   "threads.title": "Threads",

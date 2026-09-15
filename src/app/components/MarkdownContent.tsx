@@ -4,7 +4,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { codeTheme } from "@/lib/codeTheme";
 import { cn } from "@/lib/utils";
 
 interface MarkdownContentProps {
@@ -37,7 +37,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
               const match = /language-(\w+)/.exec(className || "");
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={oneDark}
+                  style={codeTheme}
                   language={match[1]}
                   PreTag="div"
                   className="max-w-full rounded-md text-sm"
@@ -61,7 +61,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 </SyntaxHighlighter>
               ) : (
                 <code
-                  className="bg-surface rounded-sm px-1 py-0.5 font-mono text-[0.9em]"
+                  className="bg-[var(--color-surface)] rounded-sm px-1 py-0.5 font-mono text-[0.9em]"
                   {...props}
                 >
                   {children}
@@ -87,7 +87,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary no-underline hover:underline"
+                  className="text-[var(--color-primary)] no-underline hover:underline"
                 >
                   {children}
                 </a>
@@ -95,7 +95,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
             },
             blockquote({ children }: { children?: React.ReactNode }) {
               return (
-                <blockquote className="text-primary/50 my-4 border-l-4 border-border pl-4 italic">
+                <blockquote className="text-[var(--color-text-secondary)] my-4 border-l-4 border-border pl-4 italic">
                   {children}
                 </blockquote>
               );
@@ -117,7 +117,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
             table({ children }: { children?: React.ReactNode }) {
               return (
                 <div className="my-4 overflow-x-auto">
-                  <table className="[&_th]:bg-surface w-full border-collapse [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold">
+                  <table className="[&_th]:bg-[var(--color-surface)] w-full border-collapse [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold">
                     {children}
                   </table>
                 </div>

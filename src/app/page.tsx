@@ -21,7 +21,6 @@ import {
   isUuid,
 } from "@/lib/assistants";
 import { ConfigDialog } from "@/app/components/ConfigDialog";
-import { LanguageToggle } from "@/app/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { ClientProvider, useClient } from "@/providers/ClientProvider";
@@ -209,7 +208,6 @@ function HomePageInner({
               <span className="font-medium">{t("app.assistantLabel")}</span>{" "}
               {config.assistantId}
             </div>
-            <LanguageToggle />
             <Button
               variant="outline"
               size="sm"
@@ -223,7 +221,7 @@ function HomePageInner({
               size="sm"
               onClick={() => setThreadId(null)}
               disabled={!threadId}
-              className="border-[#2F6868] bg-[#2F6868] text-white hover:bg-[#2F6868]/80"
+              className="border-[var(--color-accent-strong)] bg-[var(--color-accent-strong)] text-white hover:bg-[var(--color-accent-strong-hover)]"
             >
               <SquarePen className="mr-2 h-4 w-4" />
               {t("app.newThread")}
@@ -332,9 +330,6 @@ function HomePageContent() {
             >
               {t("app.openConfiguration")}
             </Button>
-            <div className="mt-4 flex justify-center">
-              <LanguageToggle />
-            </div>
           </div>
         </div>
       </>

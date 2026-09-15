@@ -9,8 +9,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // bg-primary / text-primary-foreground 这两个工具类在 tailwind.config.mjs 里
+        // 被指向了没人定义的 --bg-primary / --text-primary，等于什么都没生成（按钮一直是
+        // 透明的）。这里改用主题变量，顺便让主色按钮跟着主题走。
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+          "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] shadow-xs hover:bg-[var(--color-primary-hover)]",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:

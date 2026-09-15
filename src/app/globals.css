@@ -15,43 +15,9 @@
     outline-color: hsl(var(--primary));
   }
 
+  /* 与主题无关的尺寸/字体/阴影/布局变量；颜色全部在下面的主题块里 */
   :root {
-    /* App-specific color variables */
-    --color-primary: #1c3c3c;
-    --color-user-message: #076699;
-    --color-user-message-bg: #e8f4f8;
-    --color-avatar-bg: #e8ebeb;
-    --color-secondary: #1c3c3c;
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-background: #f9f9f9;
-    --color-subagent-hover: #bbc4c4;
-    --color-surface: #f9fafb;
-    --color-border: #e5e7eb;
-    --color-border-light: #f3f4f6;
-    --color-text-primary: #111827;
-    --color-text-secondary: #6b7280;
-    --color-text-tertiary: #9ca3af;
-    --color-file-button: #ffffff;
-    --color-file-button-hover: #e5e7eb;
-
-    /* Dark theme colors */
-    --color-primary-dark: #2dd4bf;
-    --color-user-message-dark: #076699;
-    --color-avatar-bg-dark: #bcb2fd;
-    --color-secondary-dark: #2dd4bf;
-    --color-success-dark: #34d399;
-    --color-warning-dark: #fbbf24;
-    --color-error-dark: #f87171;
-    --color-background-dark: #0f0f0f;
-    --color-subagent-hover-dark: #d0c9fe;
-    --color-surface-dark: #1a1a1a;
-    --color-border-dark: #2d2d2d;
-    --color-border-light-dark: #232323;
-    --color-text-primary-dark: #f3f4f6;
-    --color-text-secondary-dark: #9ca3af;
-    --color-text-tertiary-dark: #6b7280;
+    color-scheme: light;
 
     /* Spacing variables */
     --spacing-xs: 0.25rem;
@@ -107,85 +73,395 @@
     --panel-width: 40vw;
     --chat-max-width: 900px;
 
-    /* Tailwind/Radix UI component variables */
-    --radius: 0.5rem;
-    --background: 0 0% 98%;
-    --foreground: 220 13% 13%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 13%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 13%;
-    --primary: 180 35% 17%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 91%;
-    --secondary-foreground: 220 13% 13%;
-    --muted: 220 13% 95%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 220 13% 95%;
-    --accent-foreground: 220 13% 13%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 180 35% 17%;
-    --sidebar: 220 13% 95%;
+    /* 图表色：五套主题共用 */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Tailwind/Radix UI 的圆角基准；sand 主题会覆盖成更圆润的值 */
+    --radius: 0.5rem;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      /* App-specific color variables */
-      --color-primary: #1c3c3c;
-      --color-user-message: #065a8a;
-      --color-user-message-bg: #2d2d2d;
-      --color-avatar-bg: #1c3c3c;
-      --color-secondary: #bbc4c4;
-      --color-success: #34d399;
-      --color-warning: #fbbf24;
-      --color-error: #f87171;
-      --color-background: #202020;
-      --color-subagent-hover: #1e3f3f;
-      --color-surface: #2a2a2a;
-      --color-border: #404040;
-      --color-border-light: #353535;
-      --color-text-primary: #f3f4f6;
-      --color-text-secondary: #9ca3af;
-      --color-text-tertiary: #6b7280;
-      --color-file-button: #2a2a2a;
-      --color-file-button-hover: #353535;
+  /*
+   * 五套颜色主题。每套必须同时覆盖两层变量，缺一层就会有元素不跟着变：
+   *   1. HSL triplet 层（--primary 等）：tailwind.config.mjs 里以 hsl(var(--x)) 消费，
+   *      驱动绝大部分 UI；
+   *   2. hex 层（--color-*）：给内联 style 和本文件里的裸规则用。
+   * 两层是手工同步的，所以 triplet 后面都注了对应的 hex。硬性约定：
+   * --primary 必须与 --color-primary 相同，--ring 跟随 --primary。
+   *
+   * 默认那套与 :root 写成选择器列表，这样还没挂上 data-theme 时（SSR、首帧、
+   * 防闪脚本没跑）呈现的就是默认外观。
+   */
+  :root,
+  :root[data-theme="teal"] {
+    /* 青绿：改造前的原始配色，保持为默认 */
+    --color-primary: #1c3c3c;
+    --color-primary-foreground: #ffffff;
+    --color-primary-hover: #254f4f;
+    --color-accent-strong: #2f6868;
+    /* 等于旧写法 hover:bg-[#2F6868]/80 叠在 #f9f9f9 上的观感 */
+    --color-accent-strong-hover: #578585;
+    --color-background: #f9f9f9;
+    --color-surface: #f9fafb;
+    --color-border: #e5e7eb;
+    --color-border-light: #f3f4f6;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-text-tertiary: #9ca3af;
+    --color-muted-secondary: #f1f2f4;
+    --color-user-message-bg: #e8f4f8;
+    --color-file-button: #ffffff;
+    --color-file-button-hover: #e5e7eb;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-approve: #16a34a;
+    --color-approve-hover: #15803d;
+    --color-status-idle: #22c55e;
+    --color-status-busy: #3b82f6;
+    --color-status-interrupted: #f97316;
+    --color-status-error: #dc2626;
+    --color-selection-bg: #bfdbfe;
+    --color-selection-text: #111827;
+    /* 代码配色沿用 oneDark，观感与改造前一致 */
+    --color-code-bg: #282c34;
+    --color-code-text: #abb2bf;
+    --color-code-comment: #5c6370;
+    --color-code-punctuation: #abb2bf;
+    --color-code-tag: #e06c75;
+    --color-code-number: #d19a66;
+    --color-code-keyword: #c678dd;
+    --color-code-string: #98c379;
+    --color-code-function: #61afef;
+    --color-code-url: #56b6c2;
 
-      /* Tailwind/Radix UI component variables for dark mode */
-      --radius: 0.5rem;
-      --background: 0 0% 13%;
-      --foreground: 220 13% 95%;
-      --card: 0 0% 18%;
-      --card-foreground: 220 13% 95%;
-      --popover: 0 0% 18%;
-      --popover-foreground: 220 13% 95%;
-      --primary: 174 72% 56%;
-      --primary-foreground: 0 0% 13%;
-      --secondary: 0 0% 25%;
-      --secondary-foreground: 220 13% 95%;
-      --muted: 0 0% 22%;
-      --muted-foreground: 220 9% 70%;
-      --accent: 0 0% 22%;
-      --accent-foreground: 220 13% 95%;
-      --destructive: 0 63% 71%;
-      --destructive-foreground: 0 0% 13%;
-      --border: 0 0% 28%;
-      --input: 0 0% 28%;
-      --ring: 174 72% 56%;
-      --sidebar: 0 0% 18%;
-      --chart-1: 220 70% 50%;
-      --chart-2: 160 60% 45%;
-      --chart-3: 30 80% 55%;
-      --chart-4: 280 65% 60%;
-      --chart-5: 340 75% 55%;
-    }
+    --background: 0 0% 98%; /* #f9f9f9 */
+    --foreground: 220 13% 13%; /* #111827 */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 220 13% 13%; /* #111827 */
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 220 13% 13%; /* #111827 */
+    --primary: 180 35% 17%; /* #1c3c3c */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
+    --secondary: 220 13% 91%; /* #e5e7eb */
+    --secondary-foreground: 220 13% 13%; /* #111827 */
+    --muted: 220 13% 95%; /* #f1f2f4 */
+    --muted-foreground: 220 9% 46%; /* #6b7280 */
+    --accent: 220 13% 95%; /* #f1f2f4 */
+    --accent-foreground: 220 13% 13%; /* #111827 */
+    --destructive: 0 84% 60%; /* #ef4444 */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
+    --border: 220 13% 91%; /* #e5e7eb */
+    --input: 220 13% 91%; /* #e5e7eb */
+    --ring: 180 35% 17%; /* #1c3c3c */
+    --sidebar: 220 13% 95%; /* #f1f2f4 */
+  }
+
+  :root[data-theme="blue"] {
+    /* 商务蓝：偏冷的浅灰底 + 深蓝主色 */
+    --color-primary: #1d4ed8;
+    --color-primary-foreground: #ffffff;
+    --color-primary-hover: #1a44bd;
+    --color-accent-strong: #1d4ed8;
+    --color-accent-strong-hover: #4470e0;
+    --color-background: #f5f7fa;
+    --color-surface: #ffffff;
+    --color-border: #dfe5ee;
+    --color-border-light: #eef2f7;
+    --color-text-primary: #0f1b2d;
+    --color-text-secondary: #55637a;
+    --color-text-tertiary: #8b97ab;
+    --color-muted-secondary: #e8edf5;
+    --color-user-message-bg: #e3ecfd;
+    --color-file-button: #ffffff;
+    --color-file-button-hover: #e6eefc;
+    --color-success: #0f9d58;
+    --color-warning: #d97706;
+    --color-error: #dc2626;
+    --color-approve: #15803d;
+    --color-approve-hover: #166534;
+    --color-status-idle: #0f9d58;
+    --color-status-busy: #2563eb;
+    --color-status-interrupted: #ea8a0b;
+    --color-status-error: #c81e1e;
+    --color-selection-bg: #c7dbfe;
+    --color-selection-text: #0f1b2d;
+    --color-code-bg: #f4f7fb;
+    --color-code-text: #1f2937;
+    --color-code-comment: #94a3b8;
+    --color-code-punctuation: #64748b;
+    --color-code-tag: #be123c;
+    --color-code-number: #b45309;
+    --color-code-keyword: #7c3aed;
+    --color-code-string: #047857;
+    --color-code-function: #1d4ed8;
+    --color-code-url: #0e7490;
+
+    --background: 216 33% 97%; /* #f5f7fa */
+    --foreground: 216 50% 12%; /* #0f1b2d */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 216 50% 12%; /* #0f1b2d */
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 216 50% 12%; /* #0f1b2d */
+    --primary: 224 76% 48%; /* #1d4ed8 */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
+    --secondary: 214 35% 92%; /* #e4eaf2 */
+    --secondary-foreground: 216 50% 12%; /* #0f1b2d */
+    --muted: 213 35% 95%; /* #eef2f7 */
+    --muted-foreground: 217 18% 41%; /* #55637a */
+    --accent: 218 78% 95%; /* #e6eefc */
+    --accent-foreground: 216 50% 12%; /* #0f1b2d */
+    --destructive: 0 72% 51%; /* #dc2626 */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
+    --border: 216 29% 90%; /* #dfe5ee */
+    --input: 216 29% 90%; /* #dfe5ee */
+    --ring: 224 76% 48%; /* #1d4ed8 */
+    --sidebar: 213 35% 95%; /* #eef2f7 */
+  }
+
+  :root[data-theme="mint"] {
+    /* 薄荷绿：带绿的浅底 + 清爽的青绿主色 */
+    --color-primary: #0f9d76;
+    --color-primary-foreground: #ffffff;
+    --color-primary-hover: #0c8462;
+    --color-accent-strong: #0f9d76;
+    --color-accent-strong-hover: #45b294;
+    --color-background: #f3faf6;
+    --color-surface: #ffffff;
+    --color-border: #d5e9df;
+    --color-border-light: #e8f5ee;
+    --color-text-primary: #10312a;
+    --color-text-secondary: #4f6b62;
+    --color-text-tertiary: #8aa39a;
+    --color-muted-secondary: #e3f2ea;
+    --color-user-message-bg: #dcf3e9;
+    --color-file-button: #ffffff;
+    --color-file-button-hover: #dcf5e8;
+    --color-success: #0f9d76;
+    --color-warning: #d97706;
+    --color-error: #e05252;
+    --color-approve: #0f9d76;
+    --color-approve-hover: #0c8462;
+    --color-status-idle: #10b981;
+    --color-status-busy: #0ea5e9;
+    --color-status-interrupted: #ea8a0b;
+    --color-status-error: #dc4c4c;
+    --color-selection-bg: #bdf0da;
+    --color-selection-text: #10312a;
+    --color-code-bg: #f0f8f4;
+    --color-code-text: #1c3b31;
+    --color-code-comment: #8aa39a;
+    --color-code-punctuation: #55706a;
+    --color-code-tag: #c2410c;
+    --color-code-number: #a16207;
+    --color-code-keyword: #7c3aed;
+    --color-code-string: #15803d;
+    --color-code-function: #0369a1;
+    --color-code-url: #0e7490;
+
+    --background: 146 41% 97%; /* #f3faf6 */
+    --foreground: 167 51% 13%; /* #10312a */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 167 51% 13%; /* #10312a */
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 167 51% 13%; /* #10312a */
+    --primary: 164 83% 34%; /* #0f9d76 */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
+    --secondary: 152 37% 90%; /* #dcefe6 */
+    --secondary-foreground: 167 51% 13%; /* #10312a */
+    --muted: 148 39% 94%; /* #e8f5ee */
+    --muted-foreground: 161 15% 36%; /* #4f6b62 */
+    --accent: 149 56% 91%; /* #dcf5e8 */
+    --accent-foreground: 167 51% 13%; /* #10312a */
+    --destructive: 0 70% 60%; /* #e05252 */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
+    --border: 150 31% 87%; /* #d5e9df */
+    --input: 150 31% 87%; /* #d5e9df */
+    --ring: 164 83% 34%; /* #0f9d76 */
+    --sidebar: 148 39% 94%; /* #e8f5ee */
+  }
+
+  :root[data-theme="violet"] {
+    /* 紫罗兰：暗色主题。color-scheme 一开，原生滚动条与表单控件跟着变暗 */
+    color-scheme: dark;
+
+    --color-primary: #a78bfa;
+    --color-primary-foreground: #1a1230;
+    --color-primary-hover: #b9a3fb;
+    --color-accent-strong: #7c5cf0;
+    --color-accent-strong-hover: #8f74f3;
+    --color-background: #141021;
+    --color-surface: #1c1732;
+    --color-border: #2f2850;
+    --color-border-light: #241d3f;
+    --color-text-primary: #ece9fd;
+    --color-text-secondary: #a8a3c4;
+    --color-text-tertiary: #7d7899;
+    --color-muted-secondary: #241d3f;
+    --color-user-message-bg: #2a2350;
+    --color-file-button: #1c1732;
+    --color-file-button-hover: #2c2447;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-error: #f87171;
+    --color-approve: #22c55e;
+    --color-approve-hover: #16a34a;
+    --color-status-idle: #4ade80;
+    --color-status-busy: #60a5fa;
+    --color-status-interrupted: #fbbf24;
+    --color-status-error: #f87171;
+    --color-selection-bg: #3b2f6b;
+    --color-selection-text: #ece9fd;
+    --color-code-bg: #0f0b1c;
+    --color-code-text: #ddd6fe;
+    --color-code-comment: #6b6485;
+    --color-code-punctuation: #a8a3c4;
+    --color-code-tag: #fca5a5;
+    --color-code-number: #fdba74;
+    --color-code-keyword: #c4b5fd;
+    --color-code-string: #86efac;
+    --color-code-function: #93c5fd;
+    --color-code-url: #67e8f9;
+
+    --background: 254 35% 10%; /* #141021 */
+    --foreground: 249 83% 95%; /* #ece9fd */
+    --card: 251 37% 14%; /* #1c1732 */
+    --card-foreground: 249 83% 95%; /* #ece9fd */
+    --popover: 251 37% 14%; /* #1c1732 */
+    --popover-foreground: 249 83% 95%; /* #ece9fd */
+    --primary: 255 92% 76%; /* #a78bfa */
+    --primary-foreground: 256 45% 13%; /* #1a1230 */
+    --secondary: 249 39% 23%; /* #2a2350 */
+    --secondary-foreground: 249 83% 95%; /* #ece9fd */
+    --muted: 252 37% 18%; /* #241d3f */
+    --muted-foreground: 249 22% 70%; /* #a8a3c4 */
+    --accent: 254 33% 21%; /* #2c2447 */
+    --accent-foreground: 249 83% 95%; /* #ece9fd */
+    --destructive: 0 91% 71%; /* #f87171 */
+    --destructive-foreground: 254 35% 10%; /* #141021 */
+    --border: 250 33% 24%; /* #2f2850 */
+    --input: 250 33% 24%; /* #2f2850 */
+    --ring: 255 92% 76%; /* #a78bfa */
+    --sidebar: 251 41% 13%; /* #191430 */
+  }
+
+  :root[data-theme="sand"] {
+    /* 暖橙米色：轻拟物。圆角更圆，阴影分内外两档，见文件末尾的拟物块 */
+    --color-primary: #cf6b34;
+    --color-primary-foreground: #fff8f1;
+    --color-primary-hover: #b85c2a;
+    --color-accent-strong: #cf6b34;
+    --color-accent-strong-hover: #dd8b5d;
+    --color-background: #f2e9dd;
+    --color-surface: #f7efe2;
+    --color-border: #e2d5c1;
+    --color-border-light: #eadcc9;
+    --color-text-primary: #3f3227;
+    --color-text-secondary: #6f6053;
+    --color-text-tertiary: #9c8b79;
+    --color-muted-secondary: #e9dbc7;
+    --color-user-message-bg: #f4e7d5;
+    --color-file-button: #f7efe2;
+    --color-file-button-hover: #f4e7d5;
+    --color-success: #4d8f4a;
+    --color-warning: #c98a1f;
+    --color-error: #c0524a;
+    --color-approve: #4d8f4a;
+    --color-approve-hover: #3f763d;
+    --color-status-idle: #4d8f4a;
+    --color-status-busy: #b8843c;
+    --color-status-interrupted: #d0812e;
+    --color-status-error: #b3453d;
+    --color-selection-bg: #f0d9bd;
+    --color-selection-text: #3f3227;
+    --color-code-bg: #2e2620;
+    --color-code-text: #e8dccd;
+    --color-code-comment: #8a7b6b;
+    --color-code-punctuation: #cbbba8;
+    --color-code-tag: #e0857f;
+    --color-code-number: #e6b17e;
+    --color-code-keyword: #f0a868;
+    --color-code-string: #a3c48c;
+    --color-code-function: #7fb3d5;
+    --color-code-url: #d6a77a;
+
+    /* 拟物用的内外阴影，只在 sand 下定义 */
+    --shadow-soft-out: 6px 6px 12px rgba(150, 122, 92, 0.22),
+      -6px -6px 12px rgba(255, 255, 255, 0.85);
+    --shadow-soft-in: inset 3px 3px 6px rgba(150, 122, 92, 0.22),
+      inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+
+    --radius: 0.75rem;
+
+    --background: 34 45% 91%; /* #f2e9dd */
+    --foreground: 28 24% 20%; /* #3f3227 */
+    --card: 37 57% 93%; /* #f7efe2 */
+    --card-foreground: 28 24% 20%; /* #3f3227 */
+    --popover: 37 57% 93%; /* #f7efe2 */
+    --popover-foreground: 28 24% 20%; /* #3f3227 */
+    --primary: 21 62% 51%; /* #cf6b34 */
+    --primary-foreground: 30 100% 97%; /* #fff8f1 */
+    --secondary: 35 40% 84%; /* #e6d8c4 */
+    --secondary-foreground: 28 24% 20%; /* #3f3227 */
+    --muted: 35 44% 85%; /* #eadcc9 */
+    --muted-foreground: 28 14% 38%; /* #6f6053 */
+    --accent: 35 60% 90%; /* #f4e7d5 */
+    --accent-foreground: 28 24% 20%; /* #3f3227 */
+    --destructive: 4 48% 52%; /* #c0524a */
+    --destructive-foreground: 30 100% 97%; /* #fff8f1 */
+    --border: 36 36% 82%; /* #e2d5c1 */
+    --input: 36 36% 82%; /* #e2d5c1 */
+    --ring: 21 62% 51%; /* #cf6b34 */
+    --sidebar: 35 43% 87%; /* #ece0cf */
+  }
+
+  /*
+   * toast 的配色。sonner 自带一份 <style>（注入在 :head 靠后位置），里头
+   * [data-sonner-toaster][data-sonner-theme='light'] 是 (0,2,0)，所以这里必须带上
+   * 祖先 [data-theme] 凑到 (0,2,1) 才压得住。没开 richColors，success/error 那组
+   * 变量是空转，只需要 normal 这四个。
+   */
+  :root[data-theme="teal"] [data-sonner-toaster] {
+    --normal-bg: #ffffff;
+    --normal-text: #111827;
+    --normal-border: #e5e7eb;
+    --normal-bg-hover: #f9fafb;
+  }
+
+  :root[data-theme="blue"] [data-sonner-toaster] {
+    --normal-bg: #ffffff;
+    --normal-text: #0f1b2d;
+    --normal-border: #dfe5ee;
+    --normal-bg-hover: #f5f7fa;
+  }
+
+  :root[data-theme="mint"] [data-sonner-toaster] {
+    --normal-bg: #ffffff;
+    --normal-text: #10312a;
+    --normal-border: #d5e9df;
+    --normal-bg-hover: #f3faf6;
+  }
+
+  :root[data-theme="violet"] [data-sonner-toaster] {
+    --normal-bg: #1c1732;
+    --normal-text: #ece9fd;
+    --normal-border: #2f2850;
+    --normal-bg-hover: #2c2447;
+  }
+
+  /* 描述文字 sonner 写死了 #3f3f3f，只在自己的 dark 主题下才改色；暗色主题里必须顶掉 */
+  :root[data-theme="violet"] [data-sonner-toaster] [data-description] {
+    color: #a8a3c4;
+  }
+
+  :root[data-theme="sand"] [data-sonner-toaster] {
+    --normal-bg: #f7efe2;
+    --normal-text: #3f3227;
+    --normal-border: #e2d5c1;
+    --normal-bg-hover: #f4e7d5;
   }
 }
 
@@ -392,4 +668,32 @@ button {
   font-weight: 600;
   text-decoration: line-through;
   text-decoration-color: #f85149;
+}
+
+/* ---------------------------------------------------------------------------
+ * sand 主题的轻拟物
+ * 放在所有 @layer 之外：组件的 shadow-xs/lg 在 utilities 层里，这里的权重更高，
+ * 所以不用 !important 也压得住。切换主题时选择器失配，阴影自动消失，无残留。
+ * 选中的钩子都是现有 DOM 上就有的（dialog 的 data-slot、面板的 data-panel-id，
+ * 以及两处类名组合唯一的容器），不新增任何标记。
+ * ------------------------------------------------------------------------- */
+:root[data-theme="sand"] [data-slot="dialog-content"],
+:root[data-theme="sand"] [data-panel-id="thread-history"] > div,
+/* 输入框容器（ChatInterface 的 composer 卡片） */
+:root[data-theme="sand"] .rounded-xl.border.bg-background,
+/* 会话列表行（选中态靠 1px 主色边框表示，所以这里不动 border-color） */
+:root[data-theme="sand"] .group.rounded-lg.border {
+  box-shadow: var(--shadow-soft-out);
+}
+
+:root[data-theme="sand"] .border-input,
+:root[data-theme="sand"] textarea.field-sizing-content {
+  box-shadow: var(--shadow-soft-in);
+}
+
+/* 上面那批输入控件在 base 层里有 box-shadow: none !important 的聚焦规则，
+ * 想让内阴影在聚焦时留住，只能同样用 !important 顶回去。 */
+:root[data-theme="sand"] .border-input:focus,
+:root[data-theme="sand"] textarea.field-sizing-content:focus {
+  box-shadow: var(--shadow-soft-in) !important;
 }

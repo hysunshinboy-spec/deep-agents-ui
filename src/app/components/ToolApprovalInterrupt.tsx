@@ -120,7 +120,7 @@ export function ToolApprovalInterrupt({
       <div className="mb-3 flex items-center gap-2 text-foreground">
         <AlertCircle
           size={16}
-          className="text-yellow-600 dark:text-yellow-400"
+          className="text-[var(--color-warning)]"
         />
         <span className="text-xs font-semibold uppercase tracking-wider">
           {t("approval.required")}
@@ -215,7 +215,7 @@ export function ToolApprovalInterrupt({
                 "flex items-center gap-1.5 text-sm font-medium",
                 decision?.type === "reject"
                   ? "text-destructive"
-                  : "text-green-600 dark:text-green-500"
+                  : "text-[var(--color-success)]"
               )}
             >
               {decidedIcon}
@@ -246,7 +246,7 @@ export function ToolApprovalInterrupt({
               size="sm"
               onClick={handleEdit}
               disabled={isLoading}
-              className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
+              className="bg-[var(--color-approve)] text-white hover:bg-[var(--color-approve-hover)]"
             >
               <Check size={14} />
               {isLoading ? t("approval.saving") : t("approval.saveAndApprove")}
@@ -307,8 +307,7 @@ export function ToolApprovalInterrupt({
                 onClick={handleApprove}
                 disabled={isLoading}
                 className={cn(
-                  "bg-green-600 text-white hover:bg-green-700",
-                  "dark:bg-green-600 dark:hover:bg-green-700"
+                  "bg-[var(--color-approve)] text-white hover:bg-[var(--color-approve-hover)]"
                 )}
               >
                 <Check size={14} />

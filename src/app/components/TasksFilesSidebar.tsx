@@ -150,21 +150,21 @@ export const TasksFilesSidebar = React.memo<{
         return (
           <CheckCircle
             size={12}
-            className="text-success/80"
+            className="text-[var(--color-success)]"
           />
         );
       case "in_progress":
         return (
           <Clock
             size={12}
-            className="text-warning/80"
+            className="text-[var(--color-warning)]"
           />
         );
       default:
         return (
           <Circle
             size={10}
-            className="text-tertiary/70"
+            className="text-[var(--color-text-tertiary)]"
           />
         );
     }
@@ -189,7 +189,7 @@ export const TasksFilesSidebar = React.memo<{
       <div className="font-inter flex h-full w-full flex-col p-0">
         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
           <div className="flex items-center justify-between px-3 pb-1.5 pt-2">
-            <span className="text-xs font-semibold tracking-wide text-zinc-600">
+            <span className="text-xs font-semibold tracking-wide text-[var(--color-text-secondary)]">
               {t("tasks.heading")}
             </span>
             <button
@@ -204,7 +204,7 @@ export const TasksFilesSidebar = React.memo<{
             </button>
           </div>
           {tasksOpen && (
-            <div className="bg-muted-secondary rounded-xl px-3 pb-2">
+            <div className="bg-[var(--color-muted-secondary)] rounded-xl px-3 pb-2">
               <ScrollArea className="h-full">
                 {todos.length === 0 ? (
                   <div className="flex h-full items-center justify-center p-4 text-center">
@@ -216,7 +216,7 @@ export const TasksFilesSidebar = React.memo<{
                   <div className="ml-1 p-0.5">
                     {Object.entries(groupedTodos).map(([status, todos]) => (
                       <div className="mb-4">
-                        <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
+                        <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">
                           {t(
                             groupedLabelKeys[
                               status as keyof typeof groupedLabelKeys
@@ -243,7 +243,7 @@ export const TasksFilesSidebar = React.memo<{
           )}
 
           <div className="flex items-center justify-between px-3 pb-1.5 pt-2">
-            <span className="text-xs font-semibold tracking-wide text-zinc-600">
+            <span className="text-xs font-semibold tracking-wide text-[var(--color-text-secondary)]">
               {t("files.heading")}
             </span>
             <button

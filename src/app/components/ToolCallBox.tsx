@@ -97,7 +97,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
           return (
             <StopCircle
               size={14}
-              className="text-orange-500"
+              className="text-[var(--color-status-interrupted)]"
             />
           );
         default:

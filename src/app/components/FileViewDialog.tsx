@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { codeTheme } from "@/lib/codeTheme";
 import { toast } from "sonner";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
 import { useI18n } from "@/providers/I18nProvider";
@@ -147,7 +147,7 @@ export const FileViewDialog = React.memo<{
         </DialogTitle>
         <div className="mb-4 flex items-center justify-between border-b border-border pb-4">
           <div className="flex min-w-0 items-center gap-2">
-            <FileText className="text-primary/50 h-5 w-5 shrink-0" />
+            <FileText className="text-[var(--color-text-tertiary)] h-5 w-5 shrink-0" />
             {isEditingMode && file === null ? (
               <Input
                 value={fileName}
@@ -157,7 +157,7 @@ export const FileViewDialog = React.memo<{
                 aria-invalid={!fileNameIsValid}
               />
             ) : (
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium text-primary">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium text-[var(--color-text-primary)]">
                 {file?.path}
               </span>
             )}
@@ -215,7 +215,7 @@ export const FileViewDialog = React.memo<{
               className="h-full min-h-[400px] resize-none font-mono text-sm"
             />
           ) : (
-            <ScrollArea className="bg-surface h-full rounded-md">
+            <ScrollArea className="bg-[var(--color-surface)] h-full rounded-md">
               <div className="p-4">
                 {fileContent ? (
                   isMarkdown ? (
@@ -225,7 +225,7 @@ export const FileViewDialog = React.memo<{
                   ) : (
                     <SyntaxHighlighter
                       language={language}
-                      style={oneDark}
+                      style={codeTheme}
                       customStyle={{
                         margin: 0,
                         borderRadius: "0.5rem",

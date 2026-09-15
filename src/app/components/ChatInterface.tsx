@@ -46,21 +46,21 @@ const getStatusIcon = (status: TodoItem["status"], className?: string) => {
       return (
         <CheckCircle
           size={16}
-          className={cn("text-success/80", className)}
+          className={cn("text-[var(--color-success)]", className)}
         />
       );
     case "in_progress":
       return (
         <Clock
           size={16}
-          className={cn("text-warning/80", className)}
+          className={cn("text-[var(--color-warning)]", className)}
         />
       );
     default:
       return (
         <Circle
           size={16}
-          className={cn("text-tertiary/70", className)}
+          className={cn("text-[var(--color-text-tertiary)]", className)}
         />
       );
   }
@@ -363,7 +363,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                                 <CheckCircle
                                   key="icon"
                                   size={16}
-                                  className="text-success/80"
+                                  className="text-[var(--color-success)]"
                                 />,
                                 <span
                                   key="label"
@@ -402,7 +402,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                               <Circle
                                 key="icon"
                                 size={16}
-                                className="text-tertiary/70"
+                                className="text-[var(--color-text-tertiary)]"
                               />,
                               <span
                                 key="label"
@@ -435,7 +435,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                         >
                           <FileIcon size={16} />
                           {t("chat.filesState")}
-                          <span className="h-4 min-w-4 rounded-full bg-[#2F6868] px-0.5 text-center text-[10px] leading-[16px] text-white">
+                          <span className="h-4 min-w-4 rounded-full bg-[var(--color-accent-strong)] px-0.5 text-center text-[10px] leading-[16px] text-white">
                             {Object.keys(files).length}
                           </span>
                         </button>
@@ -481,7 +481,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                         aria-expanded={metaOpen === "files"}
                       >
                         {t("chat.filesState")}
-                        <span className="h-4 min-w-4 rounded-full bg-[#2F6868] px-0.5 text-center text-[10px] leading-[16px] text-white">
+                        <span className="h-4 min-w-4 rounded-full bg-[var(--color-accent-strong)] px-0.5 text-center text-[10px] leading-[16px] text-white">
                           {Object.keys(files).length}
                         </span>
                       </button>
@@ -504,7 +504,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                             key={status}
                             className="mb-4"
                           >
-                            <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
+                            <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">
                               {t(
                                 TODO_STATUS_KEYS[status as TodoItem["status"]]
                               )}
@@ -550,10 +550,10 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               placeholder={
                 isLoading ? t("chat.placeholderRunning") : t("chat.placeholder")
               }
-              className="font-inherit field-sizing-content flex-1 resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-7 text-primary outline-none placeholder:text-tertiary"
+              className="font-inherit field-sizing-content flex-1 resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-7 text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-tertiary)]"
               rows={1}
             />
-            <div className="flex justify-between gap-2 p-3">
+            <div className="flex justify-end gap-2 p-3">
               <div className="flex justify-end gap-2">
                 <Button
                   type={isLoading ? "button" : "submit"}

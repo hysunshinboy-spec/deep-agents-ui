@@ -40,15 +40,16 @@ const DATE_LOCALES: Record<Language, Locale> = {
   en: enUS,
 };
 
+// 状态点取主题里的状态色，五套主题各自定义，不再写死调色板类
 const STATUS_COLORS: Record<ThreadItem["status"], string> = {
-  idle: "bg-green-500",
-  busy: "bg-blue-500",
-  interrupted: "bg-orange-500",
-  error: "bg-red-600",
+  idle: "bg-[var(--color-status-idle)]",
+  busy: "bg-[var(--color-status-busy)]",
+  interrupted: "bg-[var(--color-status-interrupted)]",
+  error: "bg-[var(--color-status-error)]",
 };
 
 function getThreadColor(status: ThreadItem["status"]): string {
-  return STATUS_COLORS[status] ?? "bg-gray-400";
+  return STATUS_COLORS[status] ?? "bg-[var(--color-text-tertiary)]";
 }
 
 // A module-level helper rather than a component, so it translates through the
@@ -82,7 +83,7 @@ function StatusFilterItem({
       />
       {label}
       {badge !== undefined && badge > 0 && (
-        <span className="ml-1 inline-flex items-center justify-center rounded-full bg-red-600 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
+        <span className="ml-1 inline-flex items-center justify-center rounded-full bg-[var(--color-error)] px-1.5 py-0.5 text-xs font-bold leading-none text-white">
           {badge}
         </span>
       )}
@@ -95,7 +96,7 @@ function ErrorState({ message }: { message: string }) {
 
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
-      <p className="text-sm text-red-600">{t("threads.failedToLoad")}</p>
+      <p className="text-sm text-[var(--color-error)]">{t("threads.failedToLoad")}</p>
       <p className="mt-1 text-xs text-muted-foreground">{message}</p>
     </div>
   );
@@ -119,7 +120,7 @@ function EmptyState() {
 
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
-      <MessageSquare className="mb-2 h-12 w-12 text-gray-300" />
+      <MessageSquare className="mb-2 h-12 w-12 text-[var(--color-text-tertiary)]" />
       <p className="text-sm text-muted-foreground">{t("threads.empty")}</p>
     </div>
   );
@@ -332,7 +333,7 @@ export function ThreadList({
                         className={cn(
                           "group relative rounded-lg border transition-colors duration-200",
                           currentThreadId === thread.id
-                            ? "border-primary bg-accent"
+                            ? "border-[var(--color-primary)] bg-accent"
                             : "border-transparent hover:bg-accent"
                         )}
                       >
