@@ -29,16 +29,20 @@ const zh: Record<string, string> = {
   "common.toggleTasksPanel": "展开或收起任务面板",
   "common.toggleFilesPanel": "展开或收起文件面板",
 
+  // Relative timestamps (artifacts panel)
+  "time.justNow": "刚刚",
+  "time.minutesAgo": "{n} 分钟前",
+  "time.hoursAgo": "{n} 小时前",
+  "time.daysAgo": "{n} 天前",
+
   // Language switcher
   "language.switch": "切换语言",
 
   // Theme switcher
   "theme.switch": "切换主题",
   "theme.teal": "青绿",
-  "theme.blue": "商务蓝",
-  "theme.mint": "薄荷绿",
-  "theme.violet": "紫罗兰",
-  "theme.sand": "暖橙米色",
+  "theme.sky": "晴空蓝",
+  "theme.peach": "杏桃",
 
   // App shell
   "app.threads": "会话",
@@ -104,6 +108,24 @@ const zh: Record<string, string> = {
   "threads.deleting": "删除中...",
   "threads.deleted": "会话已删除",
   "threads.deleteFailed": "删除会话失败：{error}",
+  "threads.selectMode": "批量管理",
+  "threads.exitSelectMode": "退出批量管理",
+  "threads.selectionToolbar": "会话批量操作",
+  "threads.selectedCount": "已选 {count} 个",
+  "threads.selectAll": "全选",
+  "threads.clearSelection": "取消全选",
+  "threads.selectThread": "选择会话「{title}」",
+  "threads.busyCannotDelete": "会话正在运行，无法删除",
+  "threads.deleteSelected": "删除所选",
+  "threads.deleteSelectedTitle": "删除所选的 {count} 个会话？",
+  "threads.deleteSelectedDescription":
+    "这 {count} 个会话将被永久删除，此操作无法撤销。",
+  "threads.deletingProgress": "删除中…（{done}/{total}）",
+  "threads.batchDeleted": "已删除 {count} 个会话",
+  "threads.batchDeletePartial": "已删除 {success} 个，{failed} 个删除失败",
+  "threads.batchDeletePartialDescription":
+    "失败的会话仍处于选中状态，可直接重试。首个错误：{error}",
+  "threads.batchDeleteAllFailed": "{count} 个会话全部删除失败",
 
   // Chat panel
   "chat.allTasksCompleted": "全部任务已完成",
@@ -114,6 +136,17 @@ const zh: Record<string, string> = {
   "chat.placeholderRunning": "运行中...",
   "chat.send": "发送",
   "chat.stop": "停止",
+  "chat.upload": "上传文档并转换为 markdown",
+  "chat.uploading": "上传中 {progress}%",
+  "chat.parsing": "解析中…",
+  "chat.fetching": "取回结果…",
+  "chat.uploadConverted": "已转换 {name}",
+  "chat.uploadFailed": "转换失败：{error}",
+  "chat.uploadWritebackFailed": "已转换，但写入会话失败：{error}",
+  "chat.uploadQueued": "已转换 {name}，等本轮回复结束后自动写入会话",
+  "chat.waitingForFile": "等文件解析完成后自动发送…",
+  "chat.copy": "复制",
+  "chat.copied": "已复制",
 
   // Agent tasks
   "tasks.heading": "智能体任务",
@@ -122,9 +155,14 @@ const zh: Record<string, string> = {
   "tasks.statusInProgress": "进行中",
   "tasks.statusCompleted": "已完成",
 
+  // Right panel (artifacts & progress)
+  "panel.artifacts": "产物",
+  "panel.progress": "任务进度",
+
   // File system
   "files.heading": "文件系统",
   "files.empty": "暂无文件",
+  "files.chars": "{count} 字",
   "files.viewerEmpty": "文件为空",
   "files.newFile": "新文件",
   "files.filenamePlaceholder": "输入文件名...",
@@ -171,16 +209,20 @@ const en: Record<string, string> = {
   "common.toggleTasksPanel": "Toggle tasks panel",
   "common.toggleFilesPanel": "Toggle files panel",
 
+  // Relative timestamps (artifacts panel)
+  "time.justNow": "just now",
+  "time.minutesAgo": "{n} min ago",
+  "time.hoursAgo": "{n} hr ago",
+  "time.daysAgo": "{n} d ago",
+
   // Language switcher
   "language.switch": "Switch language",
 
   // Theme switcher
   "theme.switch": "Switch theme",
   "theme.teal": "Teal",
-  "theme.blue": "Business Blue",
-  "theme.mint": "Mint",
-  "theme.violet": "Violet",
-  "theme.sand": "Warm Sand",
+  "theme.sky": "Sky Blue",
+  "theme.peach": "Peach",
 
   // App shell
   "app.threads": "Threads",
@@ -247,6 +289,24 @@ const en: Record<string, string> = {
   "threads.deleting": "Deleting...",
   "threads.deleted": "Thread deleted",
   "threads.deleteFailed": "Failed to delete thread: {error}",
+  "threads.selectMode": "Select",
+  "threads.exitSelectMode": "Exit selection",
+  "threads.selectionToolbar": "Thread bulk actions",
+  "threads.selectedCount": "{count} selected",
+  "threads.selectAll": "Select all",
+  "threads.clearSelection": "Clear selection",
+  "threads.selectThread": 'Select thread "{title}"',
+  "threads.busyCannotDelete": "Thread is running and cannot be deleted",
+  "threads.deleteSelected": "Delete selected",
+  "threads.deleteSelectedTitle": "Delete {count} threads?",
+  "threads.deleteSelectedDescription":
+    "These {count} threads will be permanently deleted. This cannot be undone.",
+  "threads.deletingProgress": "Deleting… ({done}/{total})",
+  "threads.batchDeleted": "Deleted {count} threads",
+  "threads.batchDeletePartial": "Deleted {success}, {failed} failed",
+  "threads.batchDeletePartialDescription":
+    "Failed threads stay selected so you can retry. First error: {error}",
+  "threads.batchDeleteAllFailed": "Failed to delete all {count} threads",
 
   // Chat panel
   "chat.allTasksCompleted": "All tasks completed",
@@ -257,6 +317,19 @@ const en: Record<string, string> = {
   "chat.placeholderRunning": "Running...",
   "chat.send": "Send",
   "chat.stop": "Stop",
+  "chat.upload": "Upload a document and convert it to markdown",
+  "chat.uploading": "Uploading {progress}%",
+  "chat.parsing": "Parsing…",
+  "chat.fetching": "Fetching result…",
+  "chat.uploadConverted": "Converted {name}",
+  "chat.uploadFailed": "Conversion failed: {error}",
+  "chat.uploadWritebackFailed":
+    "Converted, but writing to the thread failed: {error}",
+  "chat.uploadQueued":
+    "Converted {name}; will be written to the thread once this reply finishes",
+  "chat.waitingForFile": "Will send once the file finishes parsing…",
+  "chat.copy": "Copy",
+  "chat.copied": "Copied",
 
   // Agent tasks
   "tasks.heading": "AGENT TASKS",
@@ -265,9 +338,14 @@ const en: Record<string, string> = {
   "tasks.statusInProgress": "In Progress",
   "tasks.statusCompleted": "Completed",
 
+  // Right panel (artifacts & progress)
+  "panel.artifacts": "Artifacts",
+  "panel.progress": "Progress",
+
   // File system
   "files.heading": "FILE SYSTEM",
   "files.empty": "No files created yet",
+  "files.chars": "{count} chars",
   "files.viewerEmpty": "File is empty",
   "files.newFile": "New File",
   "files.filenamePlaceholder": "Enter filename...",

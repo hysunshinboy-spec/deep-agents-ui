@@ -7,6 +7,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * 会话标题规则：取首条消息纯文本的前 50 字符，超长补省略号。
+ * 服务端从 thread values 推导标题和客户端发送时预生成占位标题共用这套逻辑，
+ * 保证两者一致、占位标题能无缝被服务端标题接替。
+ */
+export function makeThreadTitle(text: string): string {
+  const trimmed = text.trim();
+  return trimmed.slice(0, 50) + (trimmed.length > 50 ? "..." : "");
+}
+
 export function extractStringFromMessageContent(message: Message): string {
   return typeof message.content === "string"
     ? message.content
@@ -62,8 +72,60 @@ export function extractSubAgentContent(data: unknown): string {
   return JSON.stringify(data, null, 2);
 }
 
-export function isPreparingToCallTaskTool(messages: Message[]): boolean {
-  const lastMessage = messages[messages.length - 1];
+/**
+ * 待随消息发出的附件。文件解析完成后立即写进线程的虚拟文件系统
+ * （模型经 FilesManifestMiddleware 拿到内容，见 research_agent.py），
+ * 这里只记路径；发送时把路径清单作为标记拼进消息体，供聊天区渲染附件卡片。
+ */
+export interface PendingAttachment {
+  name: string;
+  /** 虚拟文件系统里的路径，如 /uploads/xxx.md。 */
+  path: string;
+}
+
+/**
+ * 把附件路径清单作为标记拼进用户正文。这个标记是双料的：模型看到
+ * 「这轮附了哪些工作区文件」，前端 `parseMessageAttachments` 再把它
+ * 拆回去渲染附件卡片。
+ */
+export function composeMessageWithFiles(
+  text: string,
+  files: PendingAttachment[]
+): string {
+  if (files.length === 0) return text;
+  const paths = files.map((f) => f.path).join("、");
+  return `${text}\n\n（已附上文件：${paths}）`;
+}
+
+export interface ParsedMessage {
+  /** 去掉附件标记之后的正文。 */
+  text: string;
+  /** 标记里列出的工作区路径。 */
+  paths: string[];
+}
+
+/**
+ * `composeMessageWithFiles` 的逆操作：拆出正文和附件路径，附件内容到
+ * `files` channel 里查（解析完就写进去了，历史记录从服务端拉回来也能解析）。
+ */
+export function parseMessageAttachments(content: string): ParsedMessage {
+  const paths: string[] = [];
+  const text = content
+    .replace(/（已附上文件：([^）]+)）/g, (_match, list: string) => {
+      paths.push(
+        ...list
+          .split("、")
+          .map((p) => p.trim())
+          .filter(Boolean)
+      );
+      return "\n";
+    })
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return { text, paths };
+}
+
+export function isPreparingToCallTaskTool(messages: Message[]): boolean {  const lastMessage = messages[messages.length - 1];
   return (
     (lastMessage.type === "ai" &&
       lastMessage.tool_calls?.some(

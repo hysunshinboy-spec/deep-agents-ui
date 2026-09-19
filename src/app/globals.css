@@ -160,262 +160,130 @@
     --sidebar: 220 13% 95%; /* #f1f2f4 */
   }
 
-  :root[data-theme="blue"] {
-    /* 商务蓝：偏冷的浅灰底 + 深蓝主色 */
-    --color-primary: #1d4ed8;
+  :root[data-theme="sky"] {
+    /* 晴空蓝：画廊白底 + 高饱和天蓝 accent，hairline 边框，轻快明亮 */
+    --color-primary: #0284c7;
     --color-primary-foreground: #ffffff;
-    --color-primary-hover: #1a44bd;
-    --color-accent-strong: #1d4ed8;
-    --color-accent-strong-hover: #4470e0;
-    --color-background: #f5f7fa;
+    --color-primary-hover: #0369a1;
+    --color-accent-strong: #0284c7;
+    --color-accent-strong-hover: #38a7dd;
+    --color-background: #f8fafc;
     --color-surface: #ffffff;
-    --color-border: #dfe5ee;
-    --color-border-light: #eef2f7;
-    --color-text-primary: #0f1b2d;
-    --color-text-secondary: #55637a;
-    --color-text-tertiary: #8b97ab;
-    --color-muted-secondary: #e8edf5;
-    --color-user-message-bg: #e3ecfd;
+    --color-border: #e2e8f0;
+    --color-border-light: #f1f5f9;
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #94a3b8;
+    --color-muted-secondary: #f1f5f9;
+    --color-user-message-bg: #e0f2fe;
     --color-file-button: #ffffff;
-    --color-file-button-hover: #e6eefc;
-    --color-success: #0f9d58;
-    --color-warning: #d97706;
-    --color-error: #dc2626;
-    --color-approve: #15803d;
-    --color-approve-hover: #166534;
-    --color-status-idle: #0f9d58;
-    --color-status-busy: #2563eb;
-    --color-status-interrupted: #ea8a0b;
-    --color-status-error: #c81e1e;
-    --color-selection-bg: #c7dbfe;
-    --color-selection-text: #0f1b2d;
-    --color-code-bg: #f4f7fb;
-    --color-code-text: #1f2937;
+    --color-file-button-hover: #f1f5f9;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-approve: #059669;
+    --color-approve-hover: #047857;
+    --color-status-idle: #22c55e;
+    --color-status-busy: #0ea5e9;
+    --color-status-interrupted: #f97316;
+    --color-status-error: #dc2626;
+    --color-selection-bg: #bae6fd;
+    --color-selection-text: #0f172a;
+    /* 浅色代码块，与明快基调一致 */
+    --color-code-bg: #f1f5f9;
+    --color-code-text: #1e293b;
     --color-code-comment: #94a3b8;
     --color-code-punctuation: #64748b;
     --color-code-tag: #be123c;
     --color-code-number: #b45309;
     --color-code-keyword: #7c3aed;
     --color-code-string: #047857;
-    --color-code-function: #1d4ed8;
-    --color-code-url: #0e7490;
-
-    --background: 216 33% 97%; /* #f5f7fa */
-    --foreground: 216 50% 12%; /* #0f1b2d */
-    --card: 0 0% 100%; /* #ffffff */
-    --card-foreground: 216 50% 12%; /* #0f1b2d */
-    --popover: 0 0% 100%; /* #ffffff */
-    --popover-foreground: 216 50% 12%; /* #0f1b2d */
-    --primary: 224 76% 48%; /* #1d4ed8 */
-    --primary-foreground: 0 0% 100%; /* #ffffff */
-    --secondary: 214 35% 92%; /* #e4eaf2 */
-    --secondary-foreground: 216 50% 12%; /* #0f1b2d */
-    --muted: 213 35% 95%; /* #eef2f7 */
-    --muted-foreground: 217 18% 41%; /* #55637a */
-    --accent: 218 78% 95%; /* #e6eefc */
-    --accent-foreground: 216 50% 12%; /* #0f1b2d */
-    --destructive: 0 72% 51%; /* #dc2626 */
-    --destructive-foreground: 0 0% 100%; /* #ffffff */
-    --border: 216 29% 90%; /* #dfe5ee */
-    --input: 216 29% 90%; /* #dfe5ee */
-    --ring: 224 76% 48%; /* #1d4ed8 */
-    --sidebar: 213 35% 95%; /* #eef2f7 */
-  }
-
-  :root[data-theme="mint"] {
-    /* 薄荷绿：带绿的浅底 + 清爽的青绿主色 */
-    --color-primary: #0f9d76;
-    --color-primary-foreground: #ffffff;
-    --color-primary-hover: #0c8462;
-    --color-accent-strong: #0f9d76;
-    --color-accent-strong-hover: #45b294;
-    --color-background: #f3faf6;
-    --color-surface: #ffffff;
-    --color-border: #d5e9df;
-    --color-border-light: #e8f5ee;
-    --color-text-primary: #10312a;
-    --color-text-secondary: #4f6b62;
-    --color-text-tertiary: #8aa39a;
-    --color-muted-secondary: #e3f2ea;
-    --color-user-message-bg: #dcf3e9;
-    --color-file-button: #ffffff;
-    --color-file-button-hover: #dcf5e8;
-    --color-success: #0f9d76;
-    --color-warning: #d97706;
-    --color-error: #e05252;
-    --color-approve: #0f9d76;
-    --color-approve-hover: #0c8462;
-    --color-status-idle: #10b981;
-    --color-status-busy: #0ea5e9;
-    --color-status-interrupted: #ea8a0b;
-    --color-status-error: #dc4c4c;
-    --color-selection-bg: #bdf0da;
-    --color-selection-text: #10312a;
-    --color-code-bg: #f0f8f4;
-    --color-code-text: #1c3b31;
-    --color-code-comment: #8aa39a;
-    --color-code-punctuation: #55706a;
-    --color-code-tag: #c2410c;
-    --color-code-number: #a16207;
-    --color-code-keyword: #7c3aed;
-    --color-code-string: #15803d;
     --color-code-function: #0369a1;
     --color-code-url: #0e7490;
 
-    --background: 146 41% 97%; /* #f3faf6 */
-    --foreground: 167 51% 13%; /* #10312a */
+    --background: 210 40% 98%; /* #f8fafc */
+    --foreground: 222 47% 11%; /* #0f172a */
     --card: 0 0% 100%; /* #ffffff */
-    --card-foreground: 167 51% 13%; /* #10312a */
+    --card-foreground: 222 47% 11%; /* #0f172a */
     --popover: 0 0% 100%; /* #ffffff */
-    --popover-foreground: 167 51% 13%; /* #10312a */
-    --primary: 164 83% 34%; /* #0f9d76 */
+    --popover-foreground: 222 47% 11%; /* #0f172a */
+    --primary: 201 96% 32%; /* #0284c7 */
     --primary-foreground: 0 0% 100%; /* #ffffff */
-    --secondary: 152 37% 90%; /* #dcefe6 */
-    --secondary-foreground: 167 51% 13%; /* #10312a */
-    --muted: 148 39% 94%; /* #e8f5ee */
-    --muted-foreground: 161 15% 36%; /* #4f6b62 */
-    --accent: 149 56% 91%; /* #dcf5e8 */
-    --accent-foreground: 167 51% 13%; /* #10312a */
-    --destructive: 0 70% 60%; /* #e05252 */
+    --secondary: 214 32% 91%; /* #e2e8f0 */
+    --secondary-foreground: 222 47% 11%; /* #0f172a */
+    --muted: 210 40% 96%; /* #f1f5f9 */
+    --muted-foreground: 215 19% 35%; /* #475569 */
+    --accent: 204 94% 94%; /* #e0f2fe */
+    --accent-foreground: 222 47% 11%; /* #0f172a */
+    --destructive: 0 84% 60%; /* #ef4444 */
     --destructive-foreground: 0 0% 100%; /* #ffffff */
-    --border: 150 31% 87%; /* #d5e9df */
-    --input: 150 31% 87%; /* #d5e9df */
-    --ring: 164 83% 34%; /* #0f9d76 */
-    --sidebar: 148 39% 94%; /* #e8f5ee */
+    --border: 214 32% 91%; /* #e2e8f0 */
+    --input: 214 32% 91%; /* #e2e8f0 */
+    --ring: 201 96% 32%; /* #0284c7 */
+    --sidebar: 210 40% 96%; /* #f1f5f9 */
   }
 
-  :root[data-theme="violet"] {
-    /* 紫罗兰：暗色主题。color-scheme 一开，原生滚动条与表单控件跟着变暗 */
-    color-scheme: dark;
-
-    --color-primary: #a78bfa;
-    --color-primary-foreground: #1a1230;
-    --color-primary-hover: #b9a3fb;
-    --color-accent-strong: #7c5cf0;
-    --color-accent-strong-hover: #8f74f3;
-    --color-background: #141021;
-    --color-surface: #1c1732;
-    --color-border: #2f2850;
-    --color-border-light: #241d3f;
-    --color-text-primary: #ece9fd;
-    --color-text-secondary: #a8a3c4;
-    --color-text-tertiary: #7d7899;
-    --color-muted-secondary: #241d3f;
-    --color-user-message-bg: #2a2350;
-    --color-file-button: #1c1732;
-    --color-file-button-hover: #2c2447;
-    --color-success: #4ade80;
-    --color-warning: #fbbf24;
-    --color-error: #f87171;
-    --color-approve: #22c55e;
-    --color-approve-hover: #16a34a;
-    --color-status-idle: #4ade80;
-    --color-status-busy: #60a5fa;
-    --color-status-interrupted: #fbbf24;
-    --color-status-error: #f87171;
-    --color-selection-bg: #3b2f6b;
-    --color-selection-text: #ece9fd;
-    --color-code-bg: #0f0b1c;
-    --color-code-text: #ddd6fe;
-    --color-code-comment: #6b6485;
-    --color-code-punctuation: #a8a3c4;
-    --color-code-tag: #fca5a5;
-    --color-code-number: #fdba74;
-    --color-code-keyword: #c4b5fd;
-    --color-code-string: #86efac;
-    --color-code-function: #93c5fd;
-    --color-code-url: #67e8f9;
-
-    --background: 254 35% 10%; /* #141021 */
-    --foreground: 249 83% 95%; /* #ece9fd */
-    --card: 251 37% 14%; /* #1c1732 */
-    --card-foreground: 249 83% 95%; /* #ece9fd */
-    --popover: 251 37% 14%; /* #1c1732 */
-    --popover-foreground: 249 83% 95%; /* #ece9fd */
-    --primary: 255 92% 76%; /* #a78bfa */
-    --primary-foreground: 256 45% 13%; /* #1a1230 */
-    --secondary: 249 39% 23%; /* #2a2350 */
-    --secondary-foreground: 249 83% 95%; /* #ece9fd */
-    --muted: 252 37% 18%; /* #241d3f */
-    --muted-foreground: 249 22% 70%; /* #a8a3c4 */
-    --accent: 254 33% 21%; /* #2c2447 */
-    --accent-foreground: 249 83% 95%; /* #ece9fd */
-    --destructive: 0 91% 71%; /* #f87171 */
-    --destructive-foreground: 254 35% 10%; /* #141021 */
-    --border: 250 33% 24%; /* #2f2850 */
-    --input: 250 33% 24%; /* #2f2850 */
-    --ring: 255 92% 76%; /* #a78bfa */
-    --sidebar: 251 41% 13%; /* #191430 */
-  }
-
-  :root[data-theme="sand"] {
-    /* 暖橙米色：轻拟物。圆角更圆，阴影分内外两档，见文件末尾的拟物块 */
-    --color-primary: #cf6b34;
-    --color-primary-foreground: #fff8f1;
-    --color-primary-hover: #b85c2a;
-    --color-accent-strong: #cf6b34;
-    --color-accent-strong-hover: #dd8b5d;
-    --color-background: #f2e9dd;
-    --color-surface: #f7efe2;
-    --color-border: #e2d5c1;
-    --color-border-light: #eadcc9;
-    --color-text-primary: #3f3227;
-    --color-text-secondary: #6f6053;
-    --color-text-tertiary: #9c8b79;
-    --color-muted-secondary: #e9dbc7;
-    --color-user-message-bg: #f4e7d5;
-    --color-file-button: #f7efe2;
-    --color-file-button-hover: #f4e7d5;
-    --color-success: #4d8f4a;
-    --color-warning: #c98a1f;
-    --color-error: #c0524a;
-    --color-approve: #4d8f4a;
-    --color-approve-hover: #3f763d;
+  :root[data-theme="peach"] {
+    /* 杏桃：暖白底 + 珊瑚橙 accent，明亮带温度，和 teal 的冷感形成对照 */
+    --color-primary: #ed6438;
+    --color-primary-foreground: #fff7ed;
+    --color-primary-hover: #d94e26;
+    --color-accent-strong: #ed6438;
+    --color-accent-strong-hover: #f2835f;
+    --color-background: #fffaf7;
+    --color-surface: #ffffff;
+    --color-border: #efe0d4;
+    --color-border-light: #faf1ea;
+    --color-text-primary: #2b211b;
+    --color-text-secondary: #7d6d61;
+    --color-text-tertiary: #a89a8e;
+    --color-muted-secondary: #faf1ea;
+    --color-user-message-bg: #ffe9de;
+    --color-file-button: #ffffff;
+    --color-file-button-hover: #faf1ea;
+    --color-success: #3f9d4e;
+    --color-warning: #e2930c;
+    --color-error: #e05252;
+    --color-approve: #3f9d4e;
+    --color-approve-hover: #358242;
     --color-status-idle: #4d8f4a;
-    --color-status-busy: #b8843c;
-    --color-status-interrupted: #d0812e;
-    --color-status-error: #b3453d;
-    --color-selection-bg: #f0d9bd;
-    --color-selection-text: #3f3227;
-    --color-code-bg: #2e2620;
-    --color-code-text: #e8dccd;
-    --color-code-comment: #8a7b6b;
-    --color-code-punctuation: #cbbba8;
-    --color-code-tag: #e0857f;
-    --color-code-number: #e6b17e;
-    --color-code-keyword: #f0a868;
-    --color-code-string: #a3c48c;
-    --color-code-function: #7fb3d5;
-    --color-code-url: #d6a77a;
+    --color-status-busy: #e8853c;
+    --color-status-interrupted: #e2930c;
+    --color-status-error: #c94f47;
+    --color-selection-bg: #ffd9c7;
+    --color-selection-text: #2b211b;
+    /* 浅色暖调代码块 */
+    --color-code-bg: #faf3ec;
+    --color-code-text: #3a2c22;
+    --color-code-comment: #a08b7a;
+    --color-code-punctuation: #8a7364;
+    --color-code-tag: #c2410c;
+    --color-code-number: #b45309;
+    --color-code-keyword: #a83a8c;
+    --color-code-string: #3f7a3a;
+    --color-code-function: #1d6fa5;
+    --color-code-url: #0e7490;
 
-    /* 拟物用的内外阴影，只在 sand 下定义 */
-    --shadow-soft-out: 6px 6px 12px rgba(150, 122, 92, 0.22),
-      -6px -6px 12px rgba(255, 255, 255, 0.85);
-    --shadow-soft-in: inset 3px 3px 6px rgba(150, 122, 92, 0.22),
-      inset -3px -3px 6px rgba(255, 255, 255, 0.8);
-
-    --radius: 0.75rem;
-
-    --background: 34 45% 91%; /* #f2e9dd */
-    --foreground: 28 24% 20%; /* #3f3227 */
-    --card: 37 57% 93%; /* #f7efe2 */
-    --card-foreground: 28 24% 20%; /* #3f3227 */
-    --popover: 37 57% 93%; /* #f7efe2 */
-    --popover-foreground: 28 24% 20%; /* #3f3227 */
-    --primary: 21 62% 51%; /* #cf6b34 */
-    --primary-foreground: 30 100% 97%; /* #fff8f1 */
-    --secondary: 35 40% 84%; /* #e6d8c4 */
-    --secondary-foreground: 28 24% 20%; /* #3f3227 */
-    --muted: 35 44% 85%; /* #eadcc9 */
-    --muted-foreground: 28 14% 38%; /* #6f6053 */
-    --accent: 35 60% 90%; /* #f4e7d5 */
-    --accent-foreground: 28 24% 20%; /* #3f3227 */
-    --destructive: 4 48% 52%; /* #c0524a */
-    --destructive-foreground: 30 100% 97%; /* #fff8f1 */
-    --border: 36 36% 82%; /* #e2d5c1 */
-    --input: 36 36% 82%; /* #e2d5c1 */
-    --ring: 21 62% 51%; /* #cf6b34 */
-    --sidebar: 35 43% 87%; /* #ece0cf */
+    --background: 24 100% 98%; /* #fffaf7 */
+    --foreground: 22 23% 14%; /* #2b211b */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 22 23% 14%; /* #2b211b */
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 22 23% 14%; /* #2b211b */
+    --primary: 15 84% 57%; /* #ed6438 */
+    --primary-foreground: 30 100% 96%; /* #fff7ed */
+    --secondary: 25 47% 89%; /* #efe0d4 */
+    --secondary-foreground: 22 23% 14%; /* #2b211b */
+    --muted: 24 60% 95%; /* #faf1ea */
+    --muted-foreground: 24 13% 44%; /* #7d6d61 */
+    --accent: 16 100% 93%; /* #ffe9de */
+    --accent-foreground: 22 23% 14%; /* #2b211b */
+    --destructive: 0 70% 60%; /* #e05252 */
+    --destructive-foreground: 30 100% 96%; /* #fff7ed */
+    --border: 25 47% 89%; /* #efe0d4 */
+    --input: 25 47% 89%; /* #efe0d4 */
+    --ring: 15 84% 57%; /* #ed6438 */
+    --sidebar: 24 60% 95%; /* #faf1ea */
   }
 
   /*
@@ -431,37 +299,18 @@
     --normal-bg-hover: #f9fafb;
   }
 
-  :root[data-theme="blue"] [data-sonner-toaster] {
+  :root[data-theme="sky"] [data-sonner-toaster] {
     --normal-bg: #ffffff;
-    --normal-text: #0f1b2d;
-    --normal-border: #dfe5ee;
-    --normal-bg-hover: #f5f7fa;
+    --normal-text: #0f172a;
+    --normal-border: #e2e8f0;
+    --normal-bg-hover: #f8fafc;
   }
 
-  :root[data-theme="mint"] [data-sonner-toaster] {
+  :root[data-theme="peach"] [data-sonner-toaster] {
     --normal-bg: #ffffff;
-    --normal-text: #10312a;
-    --normal-border: #d5e9df;
-    --normal-bg-hover: #f3faf6;
-  }
-
-  :root[data-theme="violet"] [data-sonner-toaster] {
-    --normal-bg: #1c1732;
-    --normal-text: #ece9fd;
-    --normal-border: #2f2850;
-    --normal-bg-hover: #2c2447;
-  }
-
-  /* 描述文字 sonner 写死了 #3f3f3f，只在自己的 dark 主题下才改色；暗色主题里必须顶掉 */
-  :root[data-theme="violet"] [data-sonner-toaster] [data-description] {
-    color: #a8a3c4;
-  }
-
-  :root[data-theme="sand"] [data-sonner-toaster] {
-    --normal-bg: #f7efe2;
-    --normal-text: #3f3227;
-    --normal-border: #e2d5c1;
-    --normal-bg-hover: #f4e7d5;
+    --normal-text: #2b211b;
+    --normal-border: #efe0d4;
+    --normal-bg-hover: #fffaf7;
   }
 }
 
@@ -668,32 +517,4 @@ button {
   font-weight: 600;
   text-decoration: line-through;
   text-decoration-color: #f85149;
-}
-
-/* ---------------------------------------------------------------------------
- * sand 主题的轻拟物
- * 放在所有 @layer 之外：组件的 shadow-xs/lg 在 utilities 层里，这里的权重更高，
- * 所以不用 !important 也压得住。切换主题时选择器失配，阴影自动消失，无残留。
- * 选中的钩子都是现有 DOM 上就有的（dialog 的 data-slot、面板的 data-panel-id，
- * 以及两处类名组合唯一的容器），不新增任何标记。
- * ------------------------------------------------------------------------- */
-:root[data-theme="sand"] [data-slot="dialog-content"],
-:root[data-theme="sand"] [data-panel-id="thread-history"] > div,
-/* 输入框容器（ChatInterface 的 composer 卡片） */
-:root[data-theme="sand"] .rounded-xl.border.bg-background,
-/* 会话列表行（选中态靠 1px 主色边框表示，所以这里不动 border-color） */
-:root[data-theme="sand"] .group.rounded-lg.border {
-  box-shadow: var(--shadow-soft-out);
-}
-
-:root[data-theme="sand"] .border-input,
-:root[data-theme="sand"] textarea.field-sizing-content {
-  box-shadow: var(--shadow-soft-in);
-}
-
-/* 上面那批输入控件在 base 层里有 box-shadow: none !important 的聚焦规则，
- * 想让内阴影在聚焦时留住，只能同样用 !important 顶回去。 */
-:root[data-theme="sand"] .border-input:focus,
-:root[data-theme="sand"] textarea.field-sizing-content:focus {
-  box-shadow: var(--shadow-soft-in) !important;
 }

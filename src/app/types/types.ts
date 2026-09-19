@@ -20,6 +20,25 @@ export interface FileItem {
   content: string;
 }
 
+/**
+ * Shape of a single entry in the agent's `files` state channel.
+ *
+ * Mirrors `FileData` in deepagents (`deepagents/backends/protocol.py`). The
+ * channel is backed by a delta reducer that merges per-key writes, so an
+ * update only needs to carry the files it touches — and a `null` value deletes
+ * a key rather than storing a null.
+ */
+export interface FileData {
+  content: string;
+  /** `"utf-8"` for text, `"base64"` for binary. */
+  encoding: string;
+  created_at?: string;
+  modified_at?: string;
+}
+
+/** The `files` channel, keyed by absolute path inside the virtual filesystem. */
+export type FileMap = Record<string, FileData>;
+
 export interface TodoItem {
   id: string;
   content: string;

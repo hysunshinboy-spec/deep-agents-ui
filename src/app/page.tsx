@@ -35,6 +35,7 @@ import {
 import { ThreadList } from "@/app/components/ThreadList";
 import { ChatProvider } from "@/providers/ChatProvider";
 import { ChatInterface } from "@/app/components/ChatInterface";
+import { ArtifactsPanel } from "@/app/components/ArtifactsPanel";
 
 // Stable id so that repeated resolutions replace the previous toast instead of
 // stacking, including the double invocation of effects in React strict mode.
@@ -185,7 +186,7 @@ function HomePageInner({
       <div className="flex h-screen flex-col">
         <header className="flex h-16 items-center justify-between border-b border-border px-6">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold">Deep Agent UI</h1>
+            <h1 className="text-xl font-semibold">测试助手</h1>
             {!sidebar && (
               <Button
                 variant="ghost"
@@ -230,45 +231,60 @@ function HomePageInner({
         </header>
 
         <div className="flex-1 overflow-hidden">
-          <ResizablePanelGroup
-            direction="horizontal"
-            autoSaveId="standalone-chat"
+          <ChatProvider
+            activeAssistant={assistant}
+            onHistoryRevalidate={() => mutateThreads?.()}
           >
-            {sidebar && (
-              <>
-                <ResizablePanel
-                  id="thread-history"
-                  order={1}
-                  defaultSize={25}
-                  minSize={20}
-                  className="relative min-w-[380px]"
-                >
-                  <ThreadList
-                    onThreadSelect={async (id) => {
-                      await setThreadId(id);
-                    }}
-                    onMutateReady={(fn) => setMutateThreads(() => fn)}
-                    onClose={() => setSidebar(null)}
-                    onInterruptCountChange={setInterruptCount}
-                  />
-                </ResizablePanel>
-                <ResizableHandle />
-              </>
-            )}
-
-            <ResizablePanel
-              id="chat"
-              className="relative flex flex-col"
-              order={2}
+            <ResizablePanelGroup
+              direction="horizontal"
+              autoSaveId="standalone-chat-v2"
             >
-              <ChatProvider
-                activeAssistant={assistant}
-                onHistoryRevalidate={() => mutateThreads?.()}
+              {sidebar && (
+                <>
+                  <ResizablePanel
+                    id="thread-history"
+                    order={1}
+                    defaultSize={25}
+                    minSize={14}
+                    className="relative min-w-[260px]"
+                  >
+                    <ThreadList
+                      onThreadSelect={async (id) => {
+                        await setThreadId(id);
+                      }}
+                      onMutateReady={(fn) => setMutateThreads(() => fn)}
+                      onClose={() => setSidebar(null)}
+                      onInterruptCountChange={setInterruptCount}
+                    />
+                  </ResizablePanel>
+                  <ResizableHandle />
+                </>
+              )}
+
+              <ResizablePanel
+                id="chat"
+                className="relative flex flex-col"
+                order={2}
               >
                 <ChatInterface assistant={assistant} />
-              </ChatProvider>
-            </ResizablePanel>
-          </ResizablePanelGroup>
+              </ResizablePanel>
+
+              <ResizableHandle />
+
+              {/* 产物 + 任务进度面板；Provider 上移到面板组这一层，
+                  让右侧面板也能消费 chat context（files/todos/setFiles）。 */}
+              <ResizablePanel
+                id="artifacts"
+                order={3}
+                defaultSize={18}
+                minSize={12}
+                maxSize={32}
+                className="min-w-[240px] bg-[var(--color-muted-secondary)]/40"
+              >
+                <ArtifactsPanel />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ChatProvider>
         </div>
       </div>
     </>

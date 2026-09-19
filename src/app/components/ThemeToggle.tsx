@@ -15,10 +15,8 @@ import { cn } from "@/lib/utils";
 /** 色板圆点用的主色，与 globals.css 里各主题的 --color-primary 一一对应。 */
 const THEME_SWATCHES: Record<ThemeId, string> = {
   teal: "#1c3c3c",
-  blue: "#1d4ed8",
-  mint: "#0f9d76",
-  violet: "#a78bfa",
-  sand: "#cf6b34",
+  sky: "#0284c7",
+  peach: "#ed6438",
 };
 
 function ThemeLabel({ id, label }: { id: ThemeId; label: string }) {

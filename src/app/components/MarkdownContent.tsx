@@ -5,15 +5,23 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { codeTheme } from "@/lib/codeTheme";
+import { MarkmapOutline } from "@/app/components/MarkmapOutline";
 import { cn } from "@/lib/utils";
 
 interface MarkdownContentProps {
   content: string;
   className?: string;
+  /**
+   * 为 false 表示内容仍在流式增长（所属消息还没输出完）。此时 markmap
+   * 代码块用轻量占位代替交互式脑图：否则流式期间每来一个 token 都会触发
+   * 整图 transform + 布局 + 动画重建，多个 rAF 周期堆叠会把主线程压满，
+   * 页面直接失去响应。输出完成后才一次性挂载渲染。
+   */
+  streamFinished?: boolean;
 }
 
 export const MarkdownContent = React.memo<MarkdownContentProps>(
-  ({ content, className = "" }) => {
+  ({ content, className = "", streamFinished = true }) => {
     return (
       <div
         className={cn(
@@ -35,6 +43,19 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
               children?: React.ReactNode;
             }) {
               const match = /language-(\w+)/.exec(className || "");
+              // 思维导图代码块：交给 markmap 渲染成交互式 SVG，不走语法高亮
+              if (!inline && match?.[1] === "markmap") {
+                const md = String(children).replace(/\n$/, "");
+                // 流式输出期间先用纯文本占位，完成后再挂载脑图（见 props 说明）
+                if (!streamFinished) {
+                  return (
+                    <pre className="bg-surface my-4 max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-md border border-border p-3 font-mono text-xs last:mb-0">
+                      {md}
+                    </pre>
+                  );
+                }
+                return <MarkmapOutline markdown={md} />;
+              }
               return !inline && match ? (
                 <SyntaxHighlighter
                   style={codeTheme}
@@ -61,7 +82,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 </SyntaxHighlighter>
               ) : (
                 <code
-                  className="bg-[var(--color-surface)] rounded-sm px-1 py-0.5 font-mono text-[0.9em]"
+                  className="rounded-sm bg-[var(--color-surface)] px-1 py-0.5 font-mono text-[0.9em]"
                   {...props}
                 >
                   {children}
@@ -95,7 +116,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
             },
             blockquote({ children }: { children?: React.ReactNode }) {
               return (
-                <blockquote className="text-[var(--color-text-secondary)] my-4 border-l-4 border-border pl-4 italic">
+                <blockquote className="my-4 border-l-4 border-border pl-4 italic text-[var(--color-text-secondary)]">
                   {children}
                 </blockquote>
               );
@@ -117,10 +138,20 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
             table({ children }: { children?: React.ReactNode }) {
               return (
                 <div className="my-4 overflow-x-auto">
-                  <table className="[&_th]:bg-[var(--color-surface)] w-full border-collapse [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold">
+                  <table className="w-full border-collapse [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:bg-[var(--color-surface)] [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold">
                     {children}
                   </table>
                 </div>
+              );
+            },
+            // 图表服务返回的位图是宽图，不加约束会撑破聊天气泡
+            img({ src, alt }: { src?: string | Blob; alt?: string }) {
+              return (
+                <img
+                  src={typeof src === "string" ? src : undefined}
+                  alt={alt || ""}
+                  className="my-4 h-auto max-w-full rounded-md last:mb-0"
+                />
               );
             },
           }}

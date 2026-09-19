@@ -1,9 +1,15 @@
 import useSWRInfinite from "swr/infinite";
+import { useEffect, useState } from "react";
 import type { Thread } from "@langchain/langgraph-sdk";
 import { Client } from "@langchain/langgraph-sdk";
 import { getConfig } from "@/lib/config";
 import { isUuid } from "@/lib/assistants";
 import { getLanguage, translate, type Language } from "@/lib/i18n";
+import { makeThreadTitle } from "@/app/utils/utils";
+import {
+  getPendingThreadTitle,
+  subscribePendingThreadTitles,
+} from "@/app/hooks/pendingThreadTitles";
 
 export interface ThreadItem {
   id: string;
@@ -21,6 +27,18 @@ export function useThreads(props: {
   limit?: number;
 }) {
   const pageSize = props.limit || DEFAULT_PAGE_SIZE;
+
+  // 本地占位标题（发送时预生成）变化时触发重新渲染，让侧边栏立刻显示
+  // 会话名，而不是等服务端 run 写出 values 再推导。
+  const [pendingTitleVersion, setPendingTitleVersion] = useState(0);
+  useEffect(
+    () =>
+      subscribePendingThreadTitles(() =>
+        setPendingTitleVersion((v) => v + 1)
+      ),
+    []
+  );
+  void pendingTitleVersion;
 
   return useSWRInfinite(
     (pageIndex: number, previousPageData: ThreadItem[] | null) => {
@@ -103,7 +121,7 @@ export function useThreads(props: {
                 typeof firstHumanMessage.content === "string"
                   ? firstHumanMessage.content
                   : firstHumanMessage.content[0]?.text || "";
-              title = content.slice(0, 50) + (content.length > 50 ? "..." : "");
+              title = makeThreadTitle(content);
             }
             const firstAiMessage = values.messages.find(
               (m: any) => m.type === "ai"
@@ -121,6 +139,12 @@ export function useThreads(props: {
           title = translate(language, "threads.fallbackTitle", {
             id: thread.thread_id.slice(0, 8),
           });
+        }
+
+        // 服务端还没推出标题（run 尚未写出 values）时，顶上发送时
+        // 预生成的占位标题，让会话名在会话开始执行时就出现。
+        if (title === translate(language, "threads.untitled")) {
+          title = getPendingThreadTitle(thread.thread_id) ?? title;
         }
 
         return {

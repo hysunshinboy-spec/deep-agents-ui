@@ -1,4 +1,4 @@
-export type ThemeId = "teal" | "blue" | "mint" | "violet" | "sand";
+export type ThemeId = "teal" | "sky" | "peach";
 
 export interface ThemeMeta {
   id: ThemeId;
@@ -11,10 +11,8 @@ export interface ThemeMeta {
 /** 顺序即选择器里的展示顺序。 */
 export const THEMES: ThemeMeta[] = [
   { id: "teal", labelKey: "theme.teal", isDark: false },
-  { id: "blue", labelKey: "theme.blue", isDark: false },
-  { id: "mint", labelKey: "theme.mint", isDark: false },
-  { id: "violet", labelKey: "theme.violet", isDark: true },
-  { id: "sand", labelKey: "theme.sand", isDark: false },
+  { id: "sky", labelKey: "theme.sky", isDark: false },
+  { id: "peach", labelKey: "theme.peach", isDark: false },
 ];
 
 /** 默认青绿：未选择过主题的用户看到的仍是改造前的那套配色。 */
